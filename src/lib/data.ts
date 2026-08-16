@@ -114,7 +114,14 @@ function useInvalidate(keys: string[]) {
 export function useSaveEvent() {
   const invalidate = useInvalidate(["events"]);
   return useMutation({
-    mutationFn: async (input: Partial<EventRow> & { id?: string }) => {
+    mutationFn: async (input: {
+      id?: string;
+      name: string;
+      date: string;
+      start_time: string;
+      location: string;
+      status: string;
+    }) => {
       const payload = {
         name: input.name,
         date: input.date,
@@ -122,6 +129,7 @@ export function useSaveEvent() {
         location: input.location,
         status: input.status,
       };
+
       if (input.id) {
         return unwrap(
           await supabase.from("events").update(payload).eq("id", input.id).select().single(),
