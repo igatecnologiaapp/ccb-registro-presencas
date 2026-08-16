@@ -67,7 +67,11 @@ export function generateReportPdf(event: EventRow, report: ReportData) {
     cursor += 3;
   };
 
-  const table = (head: string[], body: (string | number)[][], columnStyles?: object) => {
+  const table = (
+    head: string[],
+    body: (string | number)[][],
+    columnStyles?: Record<string, Record<string, unknown>>,
+  ) => {
     autoTable(doc, {
       startY: cursor,
       margin: { left: margin, right: margin },
@@ -77,7 +81,7 @@ export function generateReportPdf(event: EventRow, report: ReportData) {
       styles: { font: "helvetica", fontSize: 8.5, cellPadding: 1.6, textColor: INK, lineColor: LINE },
       headStyles: { fillColor: HEAD, textColor: [255, 255, 255], fontStyle: "bold" },
       alternateRowStyles: { fillColor: [244, 247, 249] },
-      columnStyles: columnStyles ?? {},
+      columnStyles: (columnStyles ?? {}) as never,
     });
     // @ts-expect-error autoTable augments the doc instance at runtime
     cursor = (doc.lastAutoTable?.finalY ?? cursor) + 10;
