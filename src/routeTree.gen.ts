@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CasasRouteImport } from './routes/casas'
+import { Route as EventosRouteImport } from './routes/eventos'
 import { Route as FuncoesRouteImport } from './routes/funcoes'
 import { Route as InstrumentosRouteImport } from './routes/instrumentos'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const CasasRoute = CasasRouteImport.update({
   id: '/casas',
   path: '/casas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventosRoute = EventosRouteImport.update({
+  id: '/eventos',
+  path: '/eventos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FuncoesRoute = FuncoesRouteImport.update({
@@ -38,12 +44,14 @@ const InstrumentosRoute = InstrumentosRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/casas': typeof CasasRoute
+  '/eventos': typeof EventosRoute
   '/funcoes': typeof FuncoesRoute
   '/instrumentos': typeof InstrumentosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/casas': typeof CasasRoute
+  '/eventos': typeof EventosRoute
   '/funcoes': typeof FuncoesRoute
   '/instrumentos': typeof InstrumentosRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/casas': typeof CasasRoute
+  '/eventos': typeof EventosRoute
   '/funcoes': typeof FuncoesRoute
   '/instrumentos': typeof InstrumentosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/casas' | '/funcoes' | '/instrumentos'
+  fullPaths: '/' | '/casas' | '/eventos' | '/funcoes' | '/instrumentos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/casas' | '/funcoes' | '/instrumentos'
-  id: '__root__' | '/' | '/casas' | '/funcoes' | '/instrumentos'
+  to: '/' | '/casas' | '/eventos' | '/funcoes' | '/instrumentos'
+  id: '__root__' | '/' | '/casas' | '/eventos' | '/funcoes' | '/instrumentos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CasasRoute: typeof CasasRoute
+  EventosRoute: typeof EventosRoute
   FuncoesRoute: typeof FuncoesRoute
   InstrumentosRoute: typeof InstrumentosRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/casas'
       fullPath: '/casas'
       preLoaderRoute: typeof CasasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eventos': {
+      id: '/eventos'
+      path: '/eventos'
+      fullPath: '/eventos'
+      preLoaderRoute: typeof EventosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/funcoes': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CasasRoute: CasasRoute,
+  EventosRoute: EventosRoute,
   FuncoesRoute: FuncoesRoute,
   InstrumentosRoute: InstrumentosRoute,
 }
