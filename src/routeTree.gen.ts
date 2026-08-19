@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FuncoesRouteImport } from './routes/funcoes'
+import { Route as InstrumentosRouteImport } from './routes/instrumentos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const FuncoesRoute = FuncoesRouteImport.update({
   path: '/funcoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InstrumentosRoute = InstrumentosRouteImport.update({
+  id: '/instrumentos',
+  path: '/instrumentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/funcoes': typeof FuncoesRoute
+  '/instrumentos': typeof InstrumentosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/funcoes': typeof FuncoesRoute
+  '/instrumentos': typeof InstrumentosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/funcoes': typeof FuncoesRoute
+  '/instrumentos': typeof InstrumentosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/funcoes'
+  fullPaths: '/' | '/funcoes' | '/instrumentos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/funcoes'
-  id: '__root__' | '/' | '/funcoes'
+  to: '/' | '/funcoes' | '/instrumentos'
+  id: '__root__' | '/' | '/funcoes' | '/instrumentos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FuncoesRoute: typeof FuncoesRoute
+  InstrumentosRoute: typeof InstrumentosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FuncoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/instrumentos': {
+      id: '/instrumentos'
+      path: '/instrumentos'
+      fullPath: '/instrumentos'
+      preLoaderRoute: typeof InstrumentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FuncoesRoute: FuncoesRoute,
+  InstrumentosRoute: InstrumentosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
