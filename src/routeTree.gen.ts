@@ -10,33 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CasasRouteImport } from './routes/casas'
+import { Route as EventosRouteImport } from './routes/eventos'
+import { Route as FuncoesRouteImport } from './routes/funcoes'
+import { Route as InstrumentosRouteImport } from './routes/instrumentos'
+import { Route as PresencasRouteImport } from './routes/presencas'
+import { Route as VinculosRouteImport } from './routes/vinculos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CasasRoute = CasasRouteImport.update({
+  id: '/casas',
+  path: '/casas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventosRoute = EventosRouteImport.update({
+  id: '/eventos',
+  path: '/eventos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FuncoesRoute = FuncoesRouteImport.update({
+  id: '/funcoes',
+  path: '/funcoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstrumentosRoute = InstrumentosRouteImport.update({
+  id: '/instrumentos',
+  path: '/instrumentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PresencasRoute = PresencasRouteImport.update({
+  id: '/presencas',
+  path: '/presencas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VinculosRoute = VinculosRouteImport.update({
+  id: '/vinculos',
+  path: '/vinculos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/casas': typeof CasasRoute
+  '/eventos': typeof EventosRoute
+  '/funcoes': typeof FuncoesRoute
+  '/instrumentos': typeof InstrumentosRoute
+  '/presencas': typeof PresencasRoute
+  '/vinculos': typeof VinculosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/casas': typeof CasasRoute
+  '/eventos': typeof EventosRoute
+  '/funcoes': typeof FuncoesRoute
+  '/instrumentos': typeof InstrumentosRoute
+  '/presencas': typeof PresencasRoute
+  '/vinculos': typeof VinculosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/casas': typeof CasasRoute
+  '/eventos': typeof EventosRoute
+  '/funcoes': typeof FuncoesRoute
+  '/instrumentos': typeof InstrumentosRoute
+  '/presencas': typeof PresencasRoute
+  '/vinculos': typeof VinculosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/casas'
+    | '/eventos'
+    | '/funcoes'
+    | '/instrumentos'
+    | '/presencas'
+    | '/vinculos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/casas'
+    | '/eventos'
+    | '/funcoes'
+    | '/instrumentos'
+    | '/presencas'
+    | '/vinculos'
+  id:
+    | '__root__'
+    | '/'
+    | '/casas'
+    | '/eventos'
+    | '/funcoes'
+    | '/instrumentos'
+    | '/presencas'
+    | '/vinculos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CasasRoute: typeof CasasRoute
+  EventosRoute: typeof EventosRoute
+  FuncoesRoute: typeof FuncoesRoute
+  InstrumentosRoute: typeof InstrumentosRoute
+  PresencasRoute: typeof PresencasRoute
+  VinculosRoute: typeof VinculosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/casas': {
+      id: '/casas'
+      path: '/casas'
+      fullPath: '/casas'
+      preLoaderRoute: typeof CasasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eventos': {
+      id: '/eventos'
+      path: '/eventos'
+      fullPath: '/eventos'
+      preLoaderRoute: typeof EventosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/funcoes': {
+      id: '/funcoes'
+      path: '/funcoes'
+      fullPath: '/funcoes'
+      preLoaderRoute: typeof FuncoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/instrumentos': {
+      id: '/instrumentos'
+      path: '/instrumentos'
+      fullPath: '/instrumentos'
+      preLoaderRoute: typeof InstrumentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/presencas': {
+      id: '/presencas'
+      path: '/presencas'
+      fullPath: '/presencas'
+      preLoaderRoute: typeof PresencasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vinculos': {
+      id: '/vinculos'
+      path: '/vinculos'
+      fullPath: '/vinculos'
+      preLoaderRoute: typeof VinculosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CasasRoute: CasasRoute,
+  EventosRoute: EventosRoute,
+  FuncoesRoute: FuncoesRoute,
+  InstrumentosRoute: InstrumentosRoute,
+  PresencasRoute: PresencasRoute,
+  VinculosRoute: VinculosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
