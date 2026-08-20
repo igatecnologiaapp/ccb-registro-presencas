@@ -13,7 +13,7 @@ import {
   useToggleFunctionInstrument,
 } from "@/lib/data";
 
-export const Route = createFileRoute("/vinculos")({
+export const Route = createFileRoute("/_authenticated/_admin/vinculos")({
   head: () => ({
     meta: [
       { title: "Vínculos Função × Instrumento — Reunião Técnica Musical" },

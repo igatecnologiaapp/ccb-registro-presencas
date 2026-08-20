@@ -31,7 +31,7 @@ import {
 } from "@/lib/data";
 import { nameMap } from "@/lib/report";
 
-export const Route = createFileRoute("/presencas")({
+export const Route = createFileRoute("/_authenticated/presencas")({
   head: () => ({
     meta: [
       { title: "Registro de Presença — Reunião Técnica Musical" },

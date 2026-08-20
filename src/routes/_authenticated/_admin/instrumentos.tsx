@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CatalogPage } from "@/components/catalog-page";
 import { useInstruments } from "@/lib/data";
 
-export const Route = createFileRoute("/instrumentos")({
+export const Route = createFileRoute("/_authenticated/_admin/instrumentos")({
   head: () => ({
     meta: [
       { title: "Cadastro de Instrumentos — Reunião Técnica Musical" },
