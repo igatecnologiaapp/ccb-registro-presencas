@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CatalogPage } from "@/components/catalog-page";
 import { usePrayerHouses } from "@/lib/data";
 
-export const Route = createFileRoute("/casas")({
+export const Route = createFileRoute("/_authenticated/_admin/casas")({
   head: () => ({
     meta: [
       { title: "Casas de Oração — Reunião Técnica Musical" },

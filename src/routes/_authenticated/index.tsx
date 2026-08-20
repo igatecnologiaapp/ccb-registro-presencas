@@ -13,7 +13,7 @@ import { useSelectedEvent } from "@/components/event-context";
 import { useAttendees, useFunctions, useInstruments, usePrayerHouses } from "@/lib/data";
 import { buildReport, formatDate, formatPercent, formatTime } from "@/lib/report";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Painel de Presenças — Reunião Técnica Musical" },

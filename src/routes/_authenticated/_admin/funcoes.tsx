@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CatalogPage } from "@/components/catalog-page";
 import { useFunctions } from "@/lib/data";
 
-export const Route = createFileRoute("/funcoes")({
+export const Route = createFileRoute("/_authenticated/_admin/funcoes")({
   head: () => ({
     meta: [
       { title: "Cadastro de Funções — Reunião Técnica Musical" },

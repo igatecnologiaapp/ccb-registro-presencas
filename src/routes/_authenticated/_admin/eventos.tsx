@@ -41,7 +41,7 @@ import {
 } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/report";
 
-export const Route = createFileRoute("/eventos")({
+export const Route = createFileRoute("/_authenticated/_admin/eventos")({
   head: () => ({
     meta: [
       { title: "Eventos e Reuniões — Reunião Técnica Musical" },

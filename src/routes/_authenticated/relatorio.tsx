@@ -21,7 +21,7 @@ import {
 import { buildReport, formatDate, formatPercent, formatTime } from "@/lib/report";
 import { generateReportPdf } from "@/lib/pdf";
 
-export const Route = createFileRoute("/relatorio")({
+export const Route = createFileRoute("/_authenticated/relatorio")({
   head: () => ({
     meta: [
       { title: "Relatório do Evento — Reunião Técnica Musical" },

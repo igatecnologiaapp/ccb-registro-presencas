@@ -9,201 +9,205 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as CasasRouteImport } from './routes/casas'
-import { Route as EventosRouteImport } from './routes/eventos'
-import { Route as FuncoesRouteImport } from './routes/funcoes'
-import { Route as InstrumentosRouteImport } from './routes/instrumentos'
-import { Route as PresencasRouteImport } from './routes/presencas'
-import { Route as RelatorioRouteImport } from './routes/relatorio'
-import { Route as VinculosRouteImport } from './routes/vinculos'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedPresencasRouteImport } from './routes/_authenticated/presencas'
+import { Route as AuthenticatedRelatorioRouteImport } from './routes/_authenticated/relatorio'
+import { Route as AuthenticatedAdminCasasRouteImport } from './routes/_authenticated/_admin/casas'
+import { Route as AuthenticatedAdminEventosRouteImport } from './routes/_authenticated/_admin/eventos'
+import { Route as AuthenticatedAdminFuncoesRouteImport } from './routes/_authenticated/_admin/funcoes'
+import { Route as AuthenticatedAdminInstrumentosRouteImport } from './routes/_authenticated/_admin/instrumentos'
+import { Route as AuthenticatedAdminVinculosRouteImport } from './routes/_authenticated/_admin/vinculos'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/_authenticated/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CasasRoute = CasasRouteImport.update({
-  id: '/casas',
-  path: '/casas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EventosRoute = EventosRouteImport.update({
-  id: '/eventos',
-  path: '/eventos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FuncoesRoute = FuncoesRouteImport.update({
-  id: '/funcoes',
-  path: '/funcoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InstrumentosRoute = InstrumentosRouteImport.update({
-  id: '/instrumentos',
-  path: '/instrumentos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PresencasRoute = PresencasRouteImport.update({
-  id: '/presencas',
+const AuthenticatedPresencasRoute = AuthenticatedPresencasRouteImport.update({
+  id: '/_authenticated/presencas',
   path: '/presencas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RelatorioRoute = RelatorioRouteImport.update({
-  id: '/relatorio',
+const AuthenticatedRelatorioRoute = AuthenticatedRelatorioRouteImport.update({
+  id: '/_authenticated/relatorio',
   path: '/relatorio',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VinculosRoute = VinculosRouteImport.update({
-  id: '/vinculos',
-  path: '/vinculos',
+const AuthenticatedAdminCasasRoute = AuthenticatedAdminCasasRouteImport.update({
+  id: '/_authenticated/_admin/casas',
+  path: '/casas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminEventosRoute =
+  AuthenticatedAdminEventosRouteImport.update({
+    id: '/_authenticated/_admin/eventos',
+    path: '/eventos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAdminFuncoesRoute =
+  AuthenticatedAdminFuncoesRouteImport.update({
+    id: '/_authenticated/_admin/funcoes',
+    path: '/funcoes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAdminInstrumentosRoute =
+  AuthenticatedAdminInstrumentosRouteImport.update({
+    id: '/_authenticated/_admin/instrumentos',
+    path: '/instrumentos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAdminVinculosRoute =
+  AuthenticatedAdminVinculosRouteImport.update({
+    id: '/_authenticated/_admin/vinculos',
+    path: '/vinculos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/casas': typeof CasasRoute
-  '/eventos': typeof EventosRoute
-  '/funcoes': typeof FuncoesRoute
-  '/instrumentos': typeof InstrumentosRoute
-  '/presencas': typeof PresencasRoute
-  '/relatorio': typeof RelatorioRoute
-  '/vinculos': typeof VinculosRoute
+  '/presencas': typeof AuthenticatedPresencasRoute
+  '/relatorio': typeof AuthenticatedRelatorioRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/casas': typeof AuthenticatedAdminCasasRoute
+  '/eventos': typeof AuthenticatedAdminEventosRoute
+  '/funcoes': typeof AuthenticatedAdminFuncoesRoute
+  '/instrumentos': typeof AuthenticatedAdminInstrumentosRoute
+  '/vinculos': typeof AuthenticatedAdminVinculosRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/casas': typeof CasasRoute
-  '/eventos': typeof EventosRoute
-  '/funcoes': typeof FuncoesRoute
-  '/instrumentos': typeof InstrumentosRoute
-  '/presencas': typeof PresencasRoute
-  '/relatorio': typeof RelatorioRoute
-  '/vinculos': typeof VinculosRoute
+  '/presencas': typeof AuthenticatedPresencasRoute
+  '/relatorio': typeof AuthenticatedRelatorioRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/casas': typeof AuthenticatedAdminCasasRoute
+  '/eventos': typeof AuthenticatedAdminEventosRoute
+  '/funcoes': typeof AuthenticatedAdminFuncoesRoute
+  '/instrumentos': typeof AuthenticatedAdminInstrumentosRoute
+  '/vinculos': typeof AuthenticatedAdminVinculosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/casas': typeof CasasRoute
-  '/eventos': typeof EventosRoute
-  '/funcoes': typeof FuncoesRoute
-  '/instrumentos': typeof InstrumentosRoute
-  '/presencas': typeof PresencasRoute
-  '/relatorio': typeof RelatorioRoute
-  '/vinculos': typeof VinculosRoute
+  '/_authenticated/presencas': typeof AuthenticatedPresencasRoute
+  '/_authenticated/relatorio': typeof AuthenticatedRelatorioRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/_admin/casas': typeof AuthenticatedAdminCasasRoute
+  '/_authenticated/_admin/eventos': typeof AuthenticatedAdminEventosRoute
+  '/_authenticated/_admin/funcoes': typeof AuthenticatedAdminFuncoesRoute
+  '/_authenticated/_admin/instrumentos': typeof AuthenticatedAdminInstrumentosRoute
+  '/_authenticated/_admin/vinculos': typeof AuthenticatedAdminVinculosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/presencas'
+    | '/relatorio'
     | '/'
     | '/casas'
     | '/eventos'
     | '/funcoes'
     | '/instrumentos'
-    | '/presencas'
-    | '/relatorio'
     | '/vinculos'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/presencas'
+    | '/relatorio'
     | '/'
     | '/casas'
     | '/eventos'
     | '/funcoes'
     | '/instrumentos'
-    | '/presencas'
-    | '/relatorio'
     | '/vinculos'
   id:
     | '__root__'
-    | '/'
-    | '/casas'
-    | '/eventos'
-    | '/funcoes'
-    | '/instrumentos'
-    | '/presencas'
-    | '/relatorio'
-    | '/vinculos'
+    | '/_authenticated/presencas'
+    | '/_authenticated/relatorio'
+    | '/_authenticated/'
+    | '/_authenticated/_admin/casas'
+    | '/_authenticated/_admin/eventos'
+    | '/_authenticated/_admin/funcoes'
+    | '/_authenticated/_admin/instrumentos'
+    | '/_authenticated/_admin/vinculos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  CasasRoute: typeof CasasRoute
-  EventosRoute: typeof EventosRoute
-  FuncoesRoute: typeof FuncoesRoute
-  InstrumentosRoute: typeof InstrumentosRoute
-  PresencasRoute: typeof PresencasRoute
-  RelatorioRoute: typeof RelatorioRoute
-  VinculosRoute: typeof VinculosRoute
+  AuthenticatedPresencasRoute: typeof AuthenticatedPresencasRoute
+  AuthenticatedRelatorioRoute: typeof AuthenticatedRelatorioRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAdminCasasRoute: typeof AuthenticatedAdminCasasRoute
+  AuthenticatedAdminEventosRoute: typeof AuthenticatedAdminEventosRoute
+  AuthenticatedAdminFuncoesRoute: typeof AuthenticatedAdminFuncoesRoute
+  AuthenticatedAdminInstrumentosRoute: typeof AuthenticatedAdminInstrumentosRoute
+  AuthenticatedAdminVinculosRoute: typeof AuthenticatedAdminVinculosRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/casas': {
-      id: '/casas'
-      path: '/casas'
-      fullPath: '/casas'
-      preLoaderRoute: typeof CasasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/eventos': {
-      id: '/eventos'
-      path: '/eventos'
-      fullPath: '/eventos'
-      preLoaderRoute: typeof EventosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/funcoes': {
-      id: '/funcoes'
-      path: '/funcoes'
-      fullPath: '/funcoes'
-      preLoaderRoute: typeof FuncoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/instrumentos': {
-      id: '/instrumentos'
-      path: '/instrumentos'
-      fullPath: '/instrumentos'
-      preLoaderRoute: typeof InstrumentosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/presencas': {
-      id: '/presencas'
+    '/_authenticated/presencas': {
+      id: '/_authenticated/presencas'
       path: '/presencas'
       fullPath: '/presencas'
-      preLoaderRoute: typeof PresencasRouteImport
+      preLoaderRoute: typeof AuthenticatedPresencasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/relatorio': {
-      id: '/relatorio'
+    '/_authenticated/relatorio': {
+      id: '/_authenticated/relatorio'
       path: '/relatorio'
       fullPath: '/relatorio'
-      preLoaderRoute: typeof RelatorioRouteImport
+      preLoaderRoute: typeof AuthenticatedRelatorioRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/vinculos': {
-      id: '/vinculos'
+    '/_authenticated/_admin/casas': {
+      id: '/_authenticated/_admin/casas'
+      path: '/casas'
+      fullPath: '/casas'
+      preLoaderRoute: typeof AuthenticatedAdminCasasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_admin/eventos': {
+      id: '/_authenticated/_admin/eventos'
+      path: '/eventos'
+      fullPath: '/eventos'
+      preLoaderRoute: typeof AuthenticatedAdminEventosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_admin/funcoes': {
+      id: '/_authenticated/_admin/funcoes'
+      path: '/funcoes'
+      fullPath: '/funcoes'
+      preLoaderRoute: typeof AuthenticatedAdminFuncoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_admin/instrumentos': {
+      id: '/_authenticated/_admin/instrumentos'
+      path: '/instrumentos'
+      fullPath: '/instrumentos'
+      preLoaderRoute: typeof AuthenticatedAdminInstrumentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_admin/vinculos': {
+      id: '/_authenticated/_admin/vinculos'
       path: '/vinculos'
       fullPath: '/vinculos'
-      preLoaderRoute: typeof VinculosRouteImport
+      preLoaderRoute: typeof AuthenticatedAdminVinculosRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  CasasRoute: CasasRoute,
-  EventosRoute: EventosRoute,
-  FuncoesRoute: FuncoesRoute,
-  InstrumentosRoute: InstrumentosRoute,
-  PresencasRoute: PresencasRoute,
-  RelatorioRoute: RelatorioRoute,
-  VinculosRoute: VinculosRoute,
+  AuthenticatedPresencasRoute: AuthenticatedPresencasRoute,
+  AuthenticatedRelatorioRoute: AuthenticatedRelatorioRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAdminCasasRoute: AuthenticatedAdminCasasRoute,
+  AuthenticatedAdminEventosRoute: AuthenticatedAdminEventosRoute,
+  AuthenticatedAdminFuncoesRoute: AuthenticatedAdminFuncoesRoute,
+  AuthenticatedAdminInstrumentosRoute: AuthenticatedAdminInstrumentosRoute,
+  AuthenticatedAdminVinculosRoute: AuthenticatedAdminVinculosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
