@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPresencasRouteImport } from './routes/_authenticated/presencas'
 import { Route as AuthenticatedRelatorioRouteImport } from './routes/_authenticated/relatorio'
@@ -18,6 +19,11 @@ import { Route as AuthenticatedAdminFuncoesRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminInstrumentosRouteImport } from './routes/_authenticated/_admin/instrumentos'
 import { Route as AuthenticatedAdminVinculosRouteImport } from './routes/_authenticated/_admin/vinculos'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/_authenticated/',
   path: '/',
@@ -64,6 +70,7 @@ const AuthenticatedAdminVinculosRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/auth': typeof AuthRoute
   '/presencas': typeof AuthenticatedPresencasRoute
   '/relatorio': typeof AuthenticatedRelatorioRoute
   '/': typeof AuthenticatedIndexRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/vinculos': typeof AuthenticatedAdminVinculosRoute
 }
 export interface FileRoutesByTo {
+  '/auth': typeof AuthRoute
   '/presencas': typeof AuthenticatedPresencasRoute
   '/relatorio': typeof AuthenticatedRelatorioRoute
   '/': typeof AuthenticatedIndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/auth': typeof AuthRoute
   '/_authenticated/presencas': typeof AuthenticatedPresencasRoute
   '/_authenticated/relatorio': typeof AuthenticatedRelatorioRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -97,6 +106,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/auth'
     | '/presencas'
     | '/relatorio'
     | '/'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/vinculos'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/auth'
     | '/presencas'
     | '/relatorio'
     | '/'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/vinculos'
   id:
     | '__root__'
+    | '/auth'
     | '/_authenticated/presencas'
     | '/_authenticated/relatorio'
     | '/_authenticated/'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthRoute: typeof AuthRoute
   AuthenticatedPresencasRoute: typeof AuthenticatedPresencasRoute
   AuthenticatedRelatorioRoute: typeof AuthenticatedRelatorioRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -140,6 +153,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
@@ -200,6 +220,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  AuthRoute: AuthRoute,
   AuthenticatedPresencasRoute: AuthenticatedPresencasRoute,
   AuthenticatedRelatorioRoute: AuthenticatedRelatorioRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
