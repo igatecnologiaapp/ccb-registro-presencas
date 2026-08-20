@@ -15,6 +15,7 @@ import { Route as EventosRouteImport } from './routes/eventos'
 import { Route as FuncoesRouteImport } from './routes/funcoes'
 import { Route as InstrumentosRouteImport } from './routes/instrumentos'
 import { Route as PresencasRouteImport } from './routes/presencas'
+import { Route as RelatorioRouteImport } from './routes/relatorio'
 import { Route as VinculosRouteImport } from './routes/vinculos'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const PresencasRoute = PresencasRouteImport.update({
   path: '/presencas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RelatorioRoute = RelatorioRouteImport.update({
+  id: '/relatorio',
+  path: '/relatorio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VinculosRoute = VinculosRouteImport.update({
   id: '/vinculos',
   path: '/vinculos',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/funcoes': typeof FuncoesRoute
   '/instrumentos': typeof InstrumentosRoute
   '/presencas': typeof PresencasRoute
+  '/relatorio': typeof RelatorioRoute
   '/vinculos': typeof VinculosRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/funcoes': typeof FuncoesRoute
   '/instrumentos': typeof InstrumentosRoute
   '/presencas': typeof PresencasRoute
+  '/relatorio': typeof RelatorioRoute
   '/vinculos': typeof VinculosRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/funcoes': typeof FuncoesRoute
   '/instrumentos': typeof InstrumentosRoute
   '/presencas': typeof PresencasRoute
+  '/relatorio': typeof RelatorioRoute
   '/vinculos': typeof VinculosRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/funcoes'
     | '/instrumentos'
     | '/presencas'
+    | '/relatorio'
     | '/vinculos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/funcoes'
     | '/instrumentos'
     | '/presencas'
+    | '/relatorio'
     | '/vinculos'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/funcoes'
     | '/instrumentos'
     | '/presencas'
+    | '/relatorio'
     | '/vinculos'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   FuncoesRoute: typeof FuncoesRoute
   InstrumentosRoute: typeof InstrumentosRoute
   PresencasRoute: typeof PresencasRoute
+  RelatorioRoute: typeof RelatorioRoute
   VinculosRoute: typeof VinculosRoute
 }
 
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PresencasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/relatorio': {
+      id: '/relatorio'
+      path: '/relatorio'
+      fullPath: '/relatorio'
+      preLoaderRoute: typeof RelatorioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vinculos': {
       id: '/vinculos'
       path: '/vinculos'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   FuncoesRoute: FuncoesRoute,
   InstrumentosRoute: InstrumentosRoute,
   PresencasRoute: PresencasRoute,
+  RelatorioRoute: RelatorioRoute,
   VinculosRoute: VinculosRoute,
 }
 export const routeTree = rootRouteImport
