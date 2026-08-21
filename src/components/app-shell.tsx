@@ -19,21 +19,22 @@ import { formatDate, formatTime } from "@/lib/report";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/presencas", label: "Registro de Presença", icon: ClipboardList },
-  { to: "/relatorio", label: "Relatório do Evento", icon: FileText },
-  { to: "/eventos", label: "Eventos", icon: CalendarDays },
-  { to: "/funcoes", label: "Funções", icon: Users },
-  { to: "/instrumentos", label: "Instrumentos", icon: Music2 },
-  { to: "/vinculos", label: "Função × Instrumento", icon: Link2 },
-  { to: "/casas", label: "Casas de Oração", icon: Church },
+  { to: "/", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
+  { to: "/presencas", label: "Registro de Presença", icon: ClipboardList, adminOnly: false },
+  { to: "/relatorio", label: "Relatório do Evento", icon: FileText, adminOnly: false },
+  { to: "/eventos", label: "Eventos", icon: CalendarDays, adminOnly: true },
+  { to: "/funcoes", label: "Funções", icon: Users, adminOnly: true },
+  { to: "/instrumentos", label: "Instrumentos", icon: Music2, adminOnly: true },
+  { to: "/vinculos", label: "Função × Instrumento", icon: Link2, adminOnly: true },
+  { to: "/casas", label: "Casas de Oração", icon: Church, adminOnly: true },
 ] as const;
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { isAdmin } = useAuth();
   return (
     <nav className="flex flex-col gap-1">
-      {NAV.map(({ to, label, icon: Icon }) => {
+      {NAV.filter((item) => !item.adminOnly || isAdmin).map(({ to, label, icon: Icon }) => {
         const active = pathname === to;
         return (
           <Link
