@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPresencasRouteImport } from './routes/_authenticated/presencas'
@@ -19,61 +20,65 @@ import { Route as AuthenticatedAdminFuncoesRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminInstrumentosRouteImport } from './routes/_authenticated/_admin/instrumentos'
 import { Route as AuthenticatedAdminVinculosRouteImport } from './routes/_authenticated/_admin/vinculos'
 
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
-  id: '/_authenticated/',
+  id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPresencasRoute = AuthenticatedPresencasRouteImport.update({
-  id: '/_authenticated/presencas',
+  id: '/presencas',
   path: '/presencas',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRelatorioRoute = AuthenticatedRelatorioRouteImport.update({
-  id: '/_authenticated/relatorio',
+  id: '/relatorio',
   path: '/relatorio',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminCasasRoute = AuthenticatedAdminCasasRouteImport.update({
-  id: '/_authenticated/_admin/casas',
+  id: '/_admin/casas',
   path: '/casas',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminEventosRoute =
   AuthenticatedAdminEventosRouteImport.update({
-    id: '/_authenticated/_admin/eventos',
+    id: '/_admin/eventos',
     path: '/eventos',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminFuncoesRoute =
   AuthenticatedAdminFuncoesRouteImport.update({
-    id: '/_authenticated/_admin/funcoes',
+    id: '/_admin/funcoes',
     path: '/funcoes',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminInstrumentosRoute =
   AuthenticatedAdminInstrumentosRouteImport.update({
-    id: '/_authenticated/_admin/instrumentos',
+    id: '/_admin/instrumentos',
     path: '/instrumentos',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminVinculosRoute =
   AuthenticatedAdminVinculosRouteImport.update({
-    id: '/_authenticated/_admin/vinculos',
+    id: '/_admin/vinculos',
     path: '/vinculos',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/presencas': typeof AuthenticatedPresencasRoute
   '/relatorio': typeof AuthenticatedRelatorioRoute
-  '/': typeof AuthenticatedIndexRoute
   '/casas': typeof AuthenticatedAdminCasasRoute
   '/eventos': typeof AuthenticatedAdminEventosRoute
   '/funcoes': typeof AuthenticatedAdminFuncoesRoute
@@ -93,6 +98,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/presencas': typeof AuthenticatedPresencasRoute
   '/_authenticated/relatorio': typeof AuthenticatedRelatorioRoute
@@ -106,10 +112,10 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/auth'
     | '/presencas'
     | '/relatorio'
-    | '/'
     | '/casas'
     | '/eventos'
     | '/funcoes'
@@ -128,6 +134,7 @@ export interface FileRouteTypes {
     | '/vinculos'
   id:
     | '__root__'
+    | '/_authenticated'
     | '/auth'
     | '/_authenticated/presencas'
     | '/_authenticated/relatorio'
@@ -140,19 +147,19 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  AuthenticatedPresencasRoute: typeof AuthenticatedPresencasRoute
-  AuthenticatedRelatorioRoute: typeof AuthenticatedRelatorioRoute
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedAdminCasasRoute: typeof AuthenticatedAdminCasasRoute
-  AuthenticatedAdminEventosRoute: typeof AuthenticatedAdminEventosRoute
-  AuthenticatedAdminFuncoesRoute: typeof AuthenticatedAdminFuncoesRoute
-  AuthenticatedAdminInstrumentosRoute: typeof AuthenticatedAdminInstrumentosRoute
-  AuthenticatedAdminVinculosRoute: typeof AuthenticatedAdminVinculosRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -165,62 +172,72 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/presencas': {
       id: '/_authenticated/presencas'
       path: '/presencas'
       fullPath: '/presencas'
       preLoaderRoute: typeof AuthenticatedPresencasRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/relatorio': {
       id: '/_authenticated/relatorio'
       path: '/relatorio'
       fullPath: '/relatorio'
       preLoaderRoute: typeof AuthenticatedRelatorioRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_admin/casas': {
       id: '/_authenticated/_admin/casas'
       path: '/casas'
       fullPath: '/casas'
       preLoaderRoute: typeof AuthenticatedAdminCasasRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_admin/eventos': {
       id: '/_authenticated/_admin/eventos'
       path: '/eventos'
       fullPath: '/eventos'
       preLoaderRoute: typeof AuthenticatedAdminEventosRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_admin/funcoes': {
       id: '/_authenticated/_admin/funcoes'
       path: '/funcoes'
       fullPath: '/funcoes'
       preLoaderRoute: typeof AuthenticatedAdminFuncoesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_admin/instrumentos': {
       id: '/_authenticated/_admin/instrumentos'
       path: '/instrumentos'
       fullPath: '/instrumentos'
       preLoaderRoute: typeof AuthenticatedAdminInstrumentosRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_admin/vinculos': {
       id: '/_authenticated/_admin/vinculos'
       path: '/vinculos'
       fullPath: '/vinculos'
       preLoaderRoute: typeof AuthenticatedAdminVinculosRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  AuthRoute: AuthRoute,
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPresencasRoute: typeof AuthenticatedPresencasRoute
+  AuthenticatedRelatorioRoute: typeof AuthenticatedRelatorioRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAdminCasasRoute: typeof AuthenticatedAdminCasasRoute
+  AuthenticatedAdminEventosRoute: typeof AuthenticatedAdminEventosRoute
+  AuthenticatedAdminFuncoesRoute: typeof AuthenticatedAdminFuncoesRoute
+  AuthenticatedAdminInstrumentosRoute: typeof AuthenticatedAdminInstrumentosRoute
+  AuthenticatedAdminVinculosRoute: typeof AuthenticatedAdminVinculosRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPresencasRoute: AuthenticatedPresencasRoute,
   AuthenticatedRelatorioRoute: AuthenticatedRelatorioRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
@@ -229,6 +246,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedAdminFuncoesRoute: AuthenticatedAdminFuncoesRoute,
   AuthenticatedAdminInstrumentosRoute: AuthenticatedAdminInstrumentosRoute,
   AuthenticatedAdminVinculosRoute: AuthenticatedAdminVinculosRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
