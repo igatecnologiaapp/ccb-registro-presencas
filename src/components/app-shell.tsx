@@ -88,6 +88,37 @@ function Brand() {
   );
 }
 
+function UserBox() {
+  const { displayName, role, session } = useAuth();
+  const signOut = useSignOut();
+  const label = displayName || session?.user.email || "Usuário";
+  return (
+    <div className="border-sidebar-border mt-auto border-t px-4 py-4">
+      <div className="flex items-start gap-2">
+        <UserCircle2 className="text-sidebar-foreground/70 mt-0.5 size-5 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sidebar-foreground truncate text-sm font-medium">{label}</p>
+          <p className="text-sidebar-foreground/60 flex items-center gap-1 text-xs">
+            <ShieldCheck className="size-3" />
+            {role === "admin" ? "Administrador" : role === "operator" ? "Operador" : "Sem perfil"}
+          </p>
+        </div>
+      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-3 w-full"
+        onClick={() => {
+          void signOut();
+        }}
+      >
+        <LogOut className="mr-2 size-4" />
+        Sair
+      </Button>
+    </div>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const { selectedEvent } = useSelectedEvent();
