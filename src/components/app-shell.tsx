@@ -11,6 +11,8 @@ import {
   Church,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { useAuth, useSignOut } from "@/lib/auth";
+import { LogOut, ShieldCheck, UserCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useSelectedEvent } from "@/components/event-context";
