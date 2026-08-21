@@ -142,11 +142,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <Menu className="size-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="bg-sidebar w-72 p-0">
+              <SheetContent side="left" className="bg-sidebar flex w-72 flex-col p-0">
                 <Brand />
                 <div className="p-3">
                   <NavList onNavigate={() => setOpen(false)} />
                 </div>
+                <UserBox />
               </SheetContent>
             </Sheet>
 
