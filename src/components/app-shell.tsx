@@ -130,6 +130,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="p-3">
           <NavList />
         </div>
+        <UserBox />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
