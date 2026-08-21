@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
 import { Route as AuthenticatedPresencasRouteImport } from './routes/_authenticated/presencas'
 import { Route as AuthenticatedRelatorioRouteImport } from './routes/_authenticated/relatorio'
 import { Route as AuthenticatedAdminCasasRouteImport } from './routes/_authenticated/_admin/casas'
@@ -34,6 +35,10 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPresencasRoute = AuthenticatedPresencasRouteImport.update({
   id: '/presencas',
   path: '/presencas',
@@ -45,33 +50,33 @@ const AuthenticatedRelatorioRoute = AuthenticatedRelatorioRouteImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminCasasRoute = AuthenticatedAdminCasasRouteImport.update({
-  id: '/_admin/casas',
+  id: '/casas',
   path: '/casas',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
 const AuthenticatedAdminEventosRoute =
   AuthenticatedAdminEventosRouteImport.update({
-    id: '/_admin/eventos',
+    id: '/eventos',
     path: '/eventos',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminFuncoesRoute =
   AuthenticatedAdminFuncoesRouteImport.update({
-    id: '/_admin/funcoes',
+    id: '/funcoes',
     path: '/funcoes',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminInstrumentosRoute =
   AuthenticatedAdminInstrumentosRouteImport.update({
-    id: '/_admin/instrumentos',
+    id: '/instrumentos',
     path: '/instrumentos',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminVinculosRoute =
   AuthenticatedAdminVinculosRouteImport.update({
-    id: '/_admin/vinculos',
+    id: '/vinculos',
     path: '/vinculos',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -87,9 +92,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/': typeof AuthenticatedIndexRoute
   '/presencas': typeof AuthenticatedPresencasRoute
   '/relatorio': typeof AuthenticatedRelatorioRoute
-  '/': typeof AuthenticatedIndexRoute
   '/casas': typeof AuthenticatedAdminCasasRoute
   '/eventos': typeof AuthenticatedAdminEventosRoute
   '/funcoes': typeof AuthenticatedAdminFuncoesRoute
@@ -100,6 +105,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/presencas': typeof AuthenticatedPresencasRoute
   '/_authenticated/relatorio': typeof AuthenticatedRelatorioRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -124,9 +130,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/'
     | '/presencas'
     | '/relatorio'
-    | '/'
     | '/casas'
     | '/eventos'
     | '/funcoes'
@@ -136,6 +142,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/_admin'
     | '/_authenticated/presencas'
     | '/_authenticated/relatorio'
     | '/_authenticated/'
@@ -174,6 +181,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/_admin': {
+      id: '/_authenticated/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/presencas': {
       id: '/_authenticated/presencas'
       path: '/presencas'
@@ -193,43 +207,40 @@ declare module '@tanstack/react-router' {
       path: '/casas'
       fullPath: '/casas'
       preLoaderRoute: typeof AuthenticatedAdminCasasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/_admin/eventos': {
       id: '/_authenticated/_admin/eventos'
       path: '/eventos'
       fullPath: '/eventos'
       preLoaderRoute: typeof AuthenticatedAdminEventosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/_admin/funcoes': {
       id: '/_authenticated/_admin/funcoes'
       path: '/funcoes'
       fullPath: '/funcoes'
       preLoaderRoute: typeof AuthenticatedAdminFuncoesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/_admin/instrumentos': {
       id: '/_authenticated/_admin/instrumentos'
       path: '/instrumentos'
       fullPath: '/instrumentos'
       preLoaderRoute: typeof AuthenticatedAdminInstrumentosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/_admin/vinculos': {
       id: '/_authenticated/_admin/vinculos'
       path: '/vinculos'
       fullPath: '/vinculos'
       preLoaderRoute: typeof AuthenticatedAdminVinculosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedPresencasRoute: typeof AuthenticatedPresencasRoute
-  AuthenticatedRelatorioRoute: typeof AuthenticatedRelatorioRoute
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminCasasRoute: typeof AuthenticatedAdminCasasRoute
   AuthenticatedAdminEventosRoute: typeof AuthenticatedAdminEventosRoute
   AuthenticatedAdminFuncoesRoute: typeof AuthenticatedAdminFuncoesRoute
@@ -237,15 +248,32 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminVinculosRoute: typeof AuthenticatedAdminVinculosRoute
 }
 
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminCasasRoute: AuthenticatedAdminCasasRoute,
+    AuthenticatedAdminEventosRoute: AuthenticatedAdminEventosRoute,
+    AuthenticatedAdminFuncoesRoute: AuthenticatedAdminFuncoesRoute,
+    AuthenticatedAdminInstrumentosRoute: AuthenticatedAdminInstrumentosRoute,
+    AuthenticatedAdminVinculosRoute: AuthenticatedAdminVinculosRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedPresencasRoute: typeof AuthenticatedPresencasRoute
+  AuthenticatedRelatorioRoute: typeof AuthenticatedRelatorioRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedPresencasRoute: AuthenticatedPresencasRoute,
   AuthenticatedRelatorioRoute: AuthenticatedRelatorioRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedAdminCasasRoute: AuthenticatedAdminCasasRoute,
-  AuthenticatedAdminEventosRoute: AuthenticatedAdminEventosRoute,
-  AuthenticatedAdminFuncoesRoute: AuthenticatedAdminFuncoesRoute,
-  AuthenticatedAdminInstrumentosRoute: AuthenticatedAdminInstrumentosRoute,
-  AuthenticatedAdminVinculosRoute: AuthenticatedAdminVinculosRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
