@@ -13,6 +13,7 @@ type AuthValue = {
   displayName: string;
   isAdmin: boolean;
   roleLoading: boolean;
+  roleError: boolean;
 };
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -49,13 +50,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const meQuery = useQuery({
     queryKey: ["me", userId],
     enabled: !!userId,
+    retry: 2,
     queryFn: async () => {
       // Garante perfil + papel (primeiro usuário do sistema recebe Administrador)
-      await supabase.rpc("bootstrap_current_user", { _display_name: "" });
+      const { error: bootstrapError } = await supabase.rpc("bootstrap_current_user", {
+        _display_name: "",
+      });
+      if (bootstrapError) throw bootstrapError;
+
       const [profile, roles] = await Promise.all([
-        supabase.from("profiles").select("display_name").eq("id", userId!).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", userId!),
+        supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", userId),
       ]);
+      if (profile.error) throw profile.error;
+      if (roles.error) throw roles.error;
+
       const list = (roles.data ?? []).map((r) => r.role as AppRole);
       const role: AppRole | null = list.includes("admin")
         ? "admin"
@@ -73,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     displayName: meQuery.data?.displayName ?? "",
     isAdmin: meQuery.data?.role === "admin",
     roleLoading: !!userId && meQuery.isPending,
+    roleError: !!userId && meQuery.isError,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
