@@ -90,7 +90,7 @@ function AuthPage() {
             Congregação Cristã no Brasil
           </p>
           <h1 className="doc-title text-sidebar-foreground mt-1 text-xl">
-            Reunião Técnica Musical
+            Registros de Presenças Reuniões e Treinamentos
           </h1>
         </div>
 
