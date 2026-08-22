@@ -9,9 +9,24 @@ export const Route = createFileRoute("/_authenticated/_admin")({
 });
 
 function AdminLayout() {
-  const { isAdmin, roleLoading } = useAuth();
+  const { isAdmin, roleLoading, roleError } = useAuth();
 
   if (roleLoading) return <LoadingBlock />;
+
+  if (roleError) {
+    return (
+      <div className="mx-auto max-w-md py-12 text-center">
+        <div className="bg-destructive/10 text-destructive mx-auto flex size-12 items-center justify-center rounded-xl">
+          <ShieldAlert className="size-6" />
+        </div>
+        <h1 className="mt-4 text-lg font-semibold">Não foi possível validar seu perfil</h1>
+        <p className="text-muted-foreground mt-2 text-sm">
+          Atualize a página para tentar novamente. Se o problema continuar, encerre a sessão e
+          entre novamente.
+        </p>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return (
