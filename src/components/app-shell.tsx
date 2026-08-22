@@ -82,7 +82,7 @@ function Brand() {
         Congregação Cristã no Brasil
       </p>
       <p className="doc-title text-sidebar-foreground mt-1 text-base leading-tight">
-        Reunião Técnica Musical
+        Registros de Presenças Reuniões e Treinamentos
       </p>
     </div>
   );
