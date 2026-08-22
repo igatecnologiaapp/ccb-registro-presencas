@@ -26,10 +26,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(next);
       setLoading(false);
     });
-    supabase.auth.getSession().then(({ data }) => {
+    void (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        // Sessão pode apontar para um usuário removido: valida antes de usar.
+        const { error } = await supabase.auth.getUser();
+        if (error) {
+          await supabase.auth.signOut({ scope: "local" });
+          setSession(null);
+          setLoading(false);
+          return;
+        }
+      }
       setSession(data.session);
       setLoading(false);
-    });
+    })();
     return () => sub.subscription.unsubscribe();
   }, []);
 
