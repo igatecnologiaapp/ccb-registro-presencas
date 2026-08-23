@@ -52,6 +52,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     enabled: !!userId,
     retry: 2,
     queryFn: async () => {
+      if (!userId) throw new Error("Sessão de usuário indisponível.");
+      const currentUserId = userId;
+
       // Garante perfil + papel (primeiro usuário do sistema recebe Administrador)
       const { error: bootstrapError } = await supabase.rpc("bootstrap_current_user", {
         _display_name: "",
@@ -59,8 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (bootstrapError) throw bootstrapError;
 
       const [profile, roles] = await Promise.all([
-        supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", userId),
+        supabase.from("profiles").select("display_name").eq("id", currentUserId).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", currentUserId),
       ]);
       if (profile.error) throw profile.error;
       if (roles.error) throw roles.error;
