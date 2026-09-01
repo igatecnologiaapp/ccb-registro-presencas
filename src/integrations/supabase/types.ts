@@ -80,6 +80,7 @@ export type Database = {
         Row: {
           created_at: string
           date: string
+          event_type: string
           id: string
           location: string
           name: string
@@ -90,6 +91,7 @@ export type Database = {
         Insert: {
           created_at?: string
           date: string
+          event_type?: string
           id?: string
           location?: string
           name: string
@@ -100,6 +102,7 @@ export type Database = {
         Update: {
           created_at?: string
           date?: string
+          event_type?: string
           id?: string
           location?: string
           name?: string
@@ -174,6 +177,7 @@ export type Database = {
           active: boolean
           created_at: string
           id: string
+          is_shared: boolean
           name: string
           updated_at: string
         }
@@ -181,6 +185,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           id?: string
+          is_shared?: boolean
           name: string
           updated_at?: string
         }
@@ -188,6 +193,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           id?: string
+          is_shared?: boolean
           name?: string
           updated_at?: string
         }
@@ -200,6 +206,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          sector_id: string | null
           updated_at: string
         }
         Insert: {
@@ -208,6 +215,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          sector_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -216,9 +224,18 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          sector_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "prayer_houses_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "sectors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -240,6 +257,94 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      sectors: {
+        Row: {
+          active: boolean
+          code: string | null
+          created_at: string
+          display_order: number
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      training_attendees: {
+        Row: {
+          birth_date: string
+          cpf: string
+          created_at: string
+          event_id: string
+          full_name: string
+          function_id: string
+          id: string
+          prayer_house_id: string
+          updated_at: string
+        }
+        Insert: {
+          birth_date: string
+          cpf: string
+          created_at?: string
+          event_id: string
+          full_name: string
+          function_id: string
+          id?: string
+          prayer_house_id: string
+          updated_at?: string
+        }
+        Update: {
+          birth_date?: string
+          cpf?: string
+          created_at?: string
+          event_id?: string
+          full_name?: string
+          function_id?: string
+          id?: string
+          prayer_house_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_attendees_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_attendees_function_id_fkey"
+            columns: ["function_id"]
+            isOneToOne: false
+            referencedRelation: "functions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_attendees_prayer_house_id_fkey"
+            columns: ["prayer_house_id"]
+            isOneToOne: false
+            referencedRelation: "prayer_houses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
