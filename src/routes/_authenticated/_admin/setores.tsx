@@ -46,15 +46,9 @@ function SectorsRoute() {
         label: "Ordem de exibição",
         getValue: (row) => row.display_order,
       }}
-      extra={{
-        field: "code",
-        label: "Código (opcional)",
-        options: [],
-        getValue: (row) => row.code,
-        badge: (row) => {
-          const total = countBySector.get(row.id) ?? 0;
-          return `${total} ${total === 1 ? "casa de oração" : "casas de oração"}${row.code ? ` · ${row.code}` : ""}`;
-        },
+      badgeText={(row) => {
+        const total = countBySector.get(row.id) ?? 0;
+        return `${total} ${total === 1 ? "casa de oração" : "casas de oração"}`;
       }}
     />
   );
