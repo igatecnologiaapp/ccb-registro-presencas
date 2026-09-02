@@ -48,6 +48,7 @@ type Props<T extends NamedRow> = {
   isLoading: boolean;
   isError: boolean;
   extra?: CatalogExtra<T>;
+  badgeText?: (row: T) => string | null;
   numberField?: { field: string; label: string; getValue: (row: T) => number };
 };
 
@@ -60,6 +61,7 @@ export function CatalogPage<T extends NamedRow>({
   isLoading,
   isError,
   extra,
+  badgeText,
   numberField,
 }: Props<T>) {
   const save = useSaveCatalogItem(table);
@@ -168,7 +170,7 @@ export function CatalogPage<T extends NamedRow>({
         ) : (
           <ul className="divide-y">
             {filtered.map((row) => {
-              const badge = extra?.badge?.(row) ?? null;
+              const badge = badgeText?.(row) ?? extra?.badge?.(row) ?? null;
               return (
                 <li key={row.id} className="flex items-center gap-3 py-2.5">
                   <div className="min-w-0 flex-1">
