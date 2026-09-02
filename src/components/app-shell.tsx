@@ -3,8 +3,10 @@ import {
   CalendarDays,
   ClipboardList,
   FileText,
+  GraduationCap,
   LayoutDashboard,
   Link2,
+  Map,
   Menu,
   Music2,
   Users,
@@ -17,17 +19,20 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useSelectedEvent } from "@/components/event-context";
 import { SearchSelect } from "@/components/search-select";
+import { eventTypeLabel } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/report";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
   { to: "/presencas", label: "Registro de Presença", icon: ClipboardList, adminOnly: false },
+  { to: "/treinamento", label: "Inscrições de Treinamento", icon: GraduationCap, adminOnly: false },
   { to: "/relatorio", label: "Relatório do Evento", icon: FileText, adminOnly: false },
   { to: "/eventos", label: "Eventos", icon: CalendarDays, adminOnly: true },
   { to: "/funcoes", label: "Funções", icon: Users, adminOnly: true },
   { to: "/instrumentos", label: "Instrumentos", icon: Music2, adminOnly: true },
   { to: "/vinculos", label: "Função × Instrumento", icon: Link2, adminOnly: true },
+  { to: "/setores", label: "Setores", icon: Map, adminOnly: true },
   { to: "/casas", label: "Casas de Oração", icon: Church, adminOnly: true },
 ] as const;
 
@@ -78,11 +83,13 @@ function EventPicker() {
 function Brand() {
   return (
     <div className="border-sidebar-border border-b px-5 py-5">
-      <p className="text-sidebar-foreground/60 text-[10px] tracking-[0.18em] uppercase">
+      <p className="doc-title text-sidebar-foreground text-lg leading-tight font-semibold tracking-wide">
         Congregação Cristã no Brasil
       </p>
-      <p className="doc-title text-sidebar-foreground mt-1 text-base leading-tight">
-        Registros de Presenças Reuniões e Treinamentos
+      <p className="text-sidebar-foreground/60 mt-1.5 text-[11px] leading-snug tracking-[0.1em] uppercase">
+        Registros de Presenças
+        <br />
+        Reuniões e Treinamentos
       </p>
     </div>
   );
@@ -157,9 +164,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               </p>
               <p className="truncate text-sm font-medium">
                 {selectedEvent
-                  ? `${selectedEvent.name} · ${formatDate(selectedEvent.date)} · ${formatTime(
-                      selectedEvent.start_time,
-                    )} · ${selectedEvent.location || "—"}`
+                  ? `${selectedEvent.name} · ${eventTypeLabel(selectedEvent.event_type)} · ${formatDate(
+                      selectedEvent.date,
+                    )} · ${formatTime(selectedEvent.start_time)} · ${selectedEvent.location || "—"}`
                   : "Nenhum evento selecionado"}
               </p>
             </div>

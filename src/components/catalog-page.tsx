@@ -25,19 +25,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { EmptyBlock, ErrorBlock, LoadingBlock, Panel } from "@/components/report-blocks";
+import { SearchSelect, type Option } from "@/components/search-select";
 import { useDeleteCatalogItem, useSaveCatalogItem, type NamedRow } from "@/lib/data";
 
-type Props = {
-  table: "functions" | "instruments" | "prayer_houses";
+export type CatalogExtra<T extends NamedRow> = {
+  /** payload column name */
+  field: string;
+  label: string;
+  placeholder?: string;
+  options: Option[];
+  getValue: (row: T) => string | null;
+  /** short text shown next to each row */
+  badge?: (row: T) => string | null;
+};
+
+type Props<T extends NamedRow> = {
+  table: "functions" | "instruments" | "prayer_houses" | "sectors";
   title: string;
   singular: string;
   description: string;
-  rows: NamedRow[] | undefined;
+  rows: T[] | undefined;
   isLoading: boolean;
   isError: boolean;
+  extra?: CatalogExtra<T>;
+  badgeText?: (row: T) => string | null;
+  numberField?: { field: string; label: string; getValue: (row: T) => number };
 };
 
-export function CatalogPage({
+export function CatalogPage<T extends NamedRow>({
   table,
   title,
   singular,
@@ -45,16 +60,21 @@ export function CatalogPage({
   rows,
   isLoading,
   isError,
-}: Props) {
+  extra,
+  badgeText,
+  numberField,
+}: Props<T>) {
   const save = useSaveCatalogItem(table);
   const remove = useDeleteCatalogItem(table);
 
   const [search, setSearch] = useState("");
-  const [editing, setEditing] = useState<NamedRow | null>(null);
+  const [editing, setEditing] = useState<T | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [name, setName] = useState("");
   const [active, setActive] = useState(true);
-  const [toDelete, setToDelete] = useState<NamedRow | null>(null);
+  const [extraValue, setExtraValue] = useState<string | null>(null);
+  const [numberValue, setNumberValue] = useState("0");
+  const [toDelete, setToDelete] = useState<T | null>(null);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -66,13 +86,17 @@ export function CatalogPage({
     setEditing(null);
     setName("");
     setActive(true);
+    setExtraValue(null);
+    setNumberValue("0");
     setDialogOpen(true);
   };
 
-  const openEdit = (row: NamedRow) => {
+  const openEdit = (row: T) => {
     setEditing(row);
     setName(row.name);
     setActive(row.active);
+    setExtraValue(extra ? extra.getValue(row) : null);
+    setNumberValue(numberField ? String(numberField.getValue(row)) : "0");
     setDialogOpen(true);
   };
 
@@ -81,8 +105,17 @@ export function CatalogPage({
       toast.error("Informe o nome.");
       return;
     }
+    const payloadExtra: Record<string, unknown> = {};
+    if (extra) payloadExtra[extra.field] = extraValue;
+    if (numberField) payloadExtra[numberField.field] = Number(numberValue) || 0;
+
     try {
-      await save.mutateAsync(editing ? { id: editing.id, name, active } : { name, active });
+      await save.mutateAsync({
+        ...(editing ? { id: editing.id } : {}),
+        name,
+        active,
+        extra: payloadExtra,
+      });
       toast.success(editing ? `${singular} atualizado.` : `${singular} cadastrado.`);
       setDialogOpen(false);
     } catch (error) {
@@ -136,27 +169,40 @@ export function CatalogPage({
           <EmptyBlock label="Nenhum registro encontrado." />
         ) : (
           <ul className="divide-y">
-            {filtered.map((row) => (
-              <li key={row.id} className="flex items-center gap-3 py-2.5">
-                <span className="min-w-0 flex-1 truncate text-sm">{row.name}</span>
-                {row.active ? (
-                  <Badge variant="secondary">Ativo</Badge>
-                ) : (
-                  <Badge variant="outline">Inativo</Badge>
-                )}
-                <Button variant="ghost" size="icon" onClick={() => openEdit(row)} aria-label="Editar">
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setToDelete(row)}
-                  aria-label="Excluir"
-                >
-                  <Trash2 className="text-destructive size-4" />
-                </Button>
-              </li>
-            ))}
+            {filtered.map((row) => {
+              const badge = badgeText?.(row) ?? extra?.badge?.(row) ?? null;
+              return (
+                <li key={row.id} className="flex items-center gap-3 py-2.5">
+                  <div className="min-w-0 flex-1">
+                    <span className="block truncate text-sm">{row.name}</span>
+                    {badge && (
+                      <span className="text-muted-foreground block truncate text-xs">{badge}</span>
+                    )}
+                  </div>
+                  {row.active ? (
+                    <Badge variant="secondary">Ativo</Badge>
+                  ) : (
+                    <Badge variant="outline">Inativo</Badge>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openEdit(row)}
+                    aria-label="Editar"
+                  >
+                    <Pencil className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setToDelete(row)}
+                    aria-label="Excluir"
+                  >
+                    <Trash2 className="text-destructive size-4" />
+                  </Button>
+                </li>
+              );
+            })}
           </ul>
         )}
       </Panel>
@@ -165,7 +211,7 @@ export function CatalogPage({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editing ? `Editar ${singular}` : `Novo ${singular}`}</DialogTitle>
-            <DialogDescription>Preencha o nome e defina a situação do cadastro.</DialogDescription>
+            <DialogDescription>Preencha os dados e defina a situação do cadastro.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -178,6 +224,30 @@ export function CatalogPage({
                 autoFocus
               />
             </div>
+            {extra && (
+              <div className="space-y-2">
+                <Label htmlFor="catalog-extra">{extra.label}</Label>
+                <SearchSelect
+                  id="catalog-extra"
+                  options={extra.options}
+                  value={extraValue}
+                  onChange={setExtraValue}
+                  placeholder={extra.placeholder ?? "Selecionar…"}
+                />
+              </div>
+            )}
+            {numberField && (
+              <div className="space-y-2">
+                <Label htmlFor="catalog-number">{numberField.label}</Label>
+                <Input
+                  id="catalog-number"
+                  type="number"
+                  className="h-11"
+                  value={numberValue}
+                  onChange={(e) => setNumberValue(e.target.value)}
+                />
+              </div>
+            )}
             <div className="flex items-center justify-between rounded-md border px-3 py-2.5">
               <Label htmlFor="catalog-active" className="text-sm">
                 Ativo
