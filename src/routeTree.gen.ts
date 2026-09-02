@@ -15,6 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
 import { Route as AuthenticatedPresencasRouteImport } from './routes/_authenticated/presencas'
 import { Route as AuthenticatedRelatorioRouteImport } from './routes/_authenticated/relatorio'
+import { Route as AuthenticatedTreinamentoRouteImport } from './routes/_authenticated/treinamento'
 import { Route as AuthenticatedAdminCasasRouteImport } from './routes/_authenticated/_admin/casas'
 import { Route as AuthenticatedAdminEventosRouteImport } from './routes/_authenticated/_admin/eventos'
 import { Route as AuthenticatedAdminFuncoesRouteImport } from './routes/_authenticated/_admin/funcoes'
@@ -50,6 +51,12 @@ const AuthenticatedRelatorioRoute = AuthenticatedRelatorioRouteImport.update({
   path: '/relatorio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTreinamentoRoute =
+  AuthenticatedTreinamentoRouteImport.update({
+    id: '/treinamento',
+    path: '/treinamento',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminCasasRoute = AuthenticatedAdminCasasRouteImport.update({
   id: '/casas',
   path: '/casas',
@@ -91,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/presencas': typeof AuthenticatedPresencasRoute
   '/relatorio': typeof AuthenticatedRelatorioRoute
+  '/treinamento': typeof AuthenticatedTreinamentoRoute
   '/casas': typeof AuthenticatedAdminCasasRoute
   '/eventos': typeof AuthenticatedAdminEventosRoute
   '/funcoes': typeof AuthenticatedAdminFuncoesRoute
@@ -103,6 +111,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/presencas': typeof AuthenticatedPresencasRoute
   '/relatorio': typeof AuthenticatedRelatorioRoute
+  '/treinamento': typeof AuthenticatedTreinamentoRoute
   '/casas': typeof AuthenticatedAdminCasasRoute
   '/eventos': typeof AuthenticatedAdminEventosRoute
   '/funcoes': typeof AuthenticatedAdminFuncoesRoute
@@ -117,6 +126,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/presencas': typeof AuthenticatedPresencasRoute
   '/_authenticated/relatorio': typeof AuthenticatedRelatorioRoute
+  '/_authenticated/treinamento': typeof AuthenticatedTreinamentoRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/_admin/casas': typeof AuthenticatedAdminCasasRoute
   '/_authenticated/_admin/eventos': typeof AuthenticatedAdminEventosRoute
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/presencas'
     | '/relatorio'
+    | '/treinamento'
     | '/casas'
     | '/eventos'
     | '/funcoes'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/'
     | '/presencas'
     | '/relatorio'
+    | '/treinamento'
     | '/casas'
     | '/eventos'
     | '/funcoes'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin'
     | '/_authenticated/presencas'
     | '/_authenticated/relatorio'
+    | '/_authenticated/treinamento'
     | '/_authenticated/'
     | '/_authenticated/_admin/casas'
     | '/_authenticated/_admin/eventos'
@@ -213,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/relatorio'
       fullPath: '/relatorio'
       preLoaderRoute: typeof AuthenticatedRelatorioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/treinamento': {
+      id: '/_authenticated/treinamento'
+      path: '/treinamento'
+      fullPath: '/treinamento'
+      preLoaderRoute: typeof AuthenticatedTreinamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_admin/casas': {
@@ -288,6 +308,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedPresencasRoute: typeof AuthenticatedPresencasRoute
   AuthenticatedRelatorioRoute: typeof AuthenticatedRelatorioRoute
+  AuthenticatedTreinamentoRoute: typeof AuthenticatedTreinamentoRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
@@ -295,6 +316,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedPresencasRoute: AuthenticatedPresencasRoute,
   AuthenticatedRelatorioRoute: AuthenticatedRelatorioRoute,
+  AuthenticatedTreinamentoRoute: AuthenticatedTreinamentoRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
