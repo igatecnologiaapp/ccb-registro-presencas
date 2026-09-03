@@ -68,6 +68,9 @@ function AttendanceRoute() {
   const [editing, setEditing] = useState<AttendeeRow | null>(null);
   const [search, setSearch] = useState("");
   const [toDelete, setToDelete] = useState<AttendeeRow | null>(null);
+  const [filterHouse, setFilterHouse] = useState<string | null>(null);
+  const [filterFunction, setFilterFunction] = useState<string | null>(null);
+  const [pendingDuplicate, setPendingDuplicate] = useState(false);
 
   const activeFunctions = (functions.data ?? []).filter((f) => f.active);
   const activeHouses = (houses.data ?? []).filter((h) => h.active);
@@ -87,7 +90,9 @@ function AttendanceRoute() {
   const houseNames = nameMap(houses.data ?? []);
 
   const rows = useMemo(() => {
-    const list = attendees.data ?? [];
+    let list = attendees.data ?? [];
+    if (filterHouse) list = list.filter((a) => a.prayer_house_id === filterHouse);
+    if (filterFunction) list = list.filter((a) => a.function_id === filterFunction);
     const term = search.trim().toLowerCase();
     if (!term) return list;
     return list.filter(
@@ -96,7 +101,7 @@ function AttendanceRoute() {
         (houseNames.get(a.prayer_house_id) ?? "").toLowerCase().includes(term) ||
         (functionNames.get(a.function_id) ?? "").toLowerCase().includes(term),
     );
-  }, [attendees.data, search, houseNames, functionNames]);
+  }, [attendees.data, search, houseNames, functionNames, filterHouse, filterFunction]);
 
   const resetForm = (keepContext: boolean) => {
     setName("");
@@ -130,10 +135,15 @@ function AttendanceRoute() {
         a.name.trim().toLowerCase() === name.trim().toLowerCase(),
     );
     if (duplicate) {
-      toast.warning("Este nome já foi registrado nesta casa de oração neste evento.");
+      setPendingDuplicate(true);
       return;
     }
 
+    await persist();
+  };
+
+  const persist = async () => {
+    if (!selectedEventId || !houseId || !functionId) return;
     try {
       await save.mutateAsync({
         ...(editing ? { id: editing.id } : {}),
@@ -218,33 +228,25 @@ function AttendanceRoute() {
               placeholder="Selecionar função…"
             />
           </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="attendee-instrument">
-              Instrumento{" "}
-              {functionId &&
-                (instrumentRequired ? (
-                  <span className="text-destructive text-xs">(obrigatório)</span>
-                ) : (
-                  <span className="text-muted-foreground text-xs">
-                    (não se aplica a esta função)
-                  </span>
-                ))}
-            </Label>
-            <SearchSelect
-              id="attendee-instrument"
-              options={allowedInstruments.map((i) => ({ value: i.id, label: i.name }))}
-              value={instrumentId}
-              onChange={setInstrumentId}
-              disabled={!instrumentRequired}
-              placeholder={
-                !functionId
-                  ? "Selecione a função primeiro"
-                  : instrumentRequired
-                    ? "Selecionar instrumento…"
-                    : "Sem instrumento"
-              }
-            />
-          </div>
+          {instrumentRequired && (
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="attendee-instrument">
+                Instrumento <span className="text-destructive text-xs">(obrigatório)</span>
+              </Label>
+              <SearchSelect
+                id="attendee-instrument"
+                options={allowedInstruments.map((i) => ({ value: i.id, label: i.name }))}
+                value={instrumentId}
+                onChange={setInstrumentId}
+                placeholder="Selecionar instrumento…"
+              />
+            </div>
+          )}
+          {functionId && !instrumentRequired && (
+            <p className="text-muted-foreground sm:col-span-2 text-xs">
+              Esta função não utiliza instrumento — o campo não é exibido.
+            </p>
+          )}
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
           <Button onClick={submit} disabled={save.isPending} className="min-w-40">
@@ -258,7 +260,7 @@ function AttendanceRoute() {
       </Panel>
 
       <Panel
-        title={`Presenças registradas · ${(attendees.data ?? []).length}`}
+        title={`Presenças registradas · ${rows.length} de ${(attendees.data ?? []).length}`}
         description="Toque em um registro para editá-lo."
       >
         <div className="relative mb-4">
@@ -271,6 +273,27 @@ function AttendanceRoute() {
           />
         </div>
 
+        <div className="mb-4 grid gap-3 sm:grid-cols-2">
+          <SearchSelect
+            options={[
+              { value: "", label: "Todas as casas de oração" },
+              ...activeHouses.map((h) => ({ value: h.id, label: h.name })),
+            ]}
+            value={filterHouse ?? ""}
+            onChange={(v) => setFilterHouse(v || null)}
+            placeholder="Filtrar por casa de oração"
+          />
+          <SearchSelect
+            options={[
+              { value: "", label: "Todas as funções" },
+              ...activeFunctions.map((f) => ({ value: f.id, label: f.name })),
+            ]}
+            value={filterFunction ?? ""}
+            onChange={(v) => setFilterFunction(v || null)}
+            placeholder="Filtrar por função"
+          />
+        </div>
+
         {attendees.isLoading ? (
           <LoadingBlock />
         ) : attendees.isError ? (
@@ -279,8 +302,11 @@ function AttendanceRoute() {
           <EmptyBlock label="Nenhuma presença registrada até o momento." />
         ) : (
           <ul className="divide-y">
-            {rows.map((row) => (
+            {rows.map((row, index) => (
               <li key={row.id} className="flex items-center gap-3 py-2.5">
+                <span className="num text-muted-foreground w-8 shrink-0 text-right text-xs">
+                  {index + 1}
+                </span>
                 <button
                   type="button"
                   className="min-w-0 flex-1 text-left"
@@ -317,6 +343,29 @@ function AttendanceRoute() {
           </ul>
         )}
       </Panel>
+
+      <AlertDialog open={pendingDuplicate} onOpenChange={setPendingDuplicate}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Nome já registrado nesta casa de oração</AlertDialogTitle>
+            <AlertDialogDescription>
+              Já existe um registro com este nome nesta casa de oração neste evento. Deseja
+              registrar novamente?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                setPendingDuplicate(false);
+                await persist();
+              }}
+            >
+              Registrar mesmo assim
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
