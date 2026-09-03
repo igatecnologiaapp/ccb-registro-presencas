@@ -34,6 +34,8 @@ import {
 import { EmptyBlock, ErrorBlock, LoadingBlock, Panel } from "@/components/report-blocks";
 import { useSelectedEvent } from "@/components/event-context";
 import {
+  EVENT_TYPES,
+  eventTypeLabel,
   useDeleteEvent,
   useDuplicateEvent,
   useSaveEvent,
@@ -60,7 +62,14 @@ export const Route = createFileRoute("/_authenticated/_admin/eventos")({
   component: EventsRoute,
 });
 
-const emptyForm = { name: "", date: "", start_time: "", location: "", status: "aberto" };
+const emptyForm = {
+  name: "",
+  date: "",
+  start_time: "",
+  location: "",
+  status: "aberto",
+  event_type: "reuniao_musical",
+};
 
 function EventsRoute() {
   const { events, selectedEventId, selectEvent, isLoading, isError } = useSelectedEvent();
@@ -87,6 +96,7 @@ function EventsRoute() {
       start_time: formatTime(event.start_time),
       location: event.location ?? "",
       status: event.status,
+      event_type: event.event_type,
     });
     setOpen(true);
   };
@@ -104,6 +114,7 @@ function EventsRoute() {
         start_time: form.start_time,
         location: form.location.trim(),
         status: form.status,
+        event_type: form.event_type,
       });
       toast.success(editingId ? "Evento atualizado." : "Evento criado.");
       if (!editingId && saved && typeof saved === "object" && "id" in saved) {
@@ -161,6 +172,7 @@ function EventsRoute() {
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-medium">{event.name}</span>
                         {active && <Badge>Ativo</Badge>}
+                        <Badge variant="outline">{eventTypeLabel(event.event_type)}</Badge>
                         <Badge variant={event.status === "aberto" ? "secondary" : "outline"}>
                           {event.status === "aberto" ? "Aberto" : "Encerrado"}
                         </Badge>
@@ -235,6 +247,28 @@ function EventsRoute() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="event-type">Tipo de evento</Label>
+              <Select
+                value={form.event_type}
+                onValueChange={(event_type) => setForm({ ...form, event_type })}
+              >
+                <SelectTrigger id="event-type" className="h-11 w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {EVENT_TYPES.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-muted-foreground text-xs">
+                Treinamento usa o formulário de inscrições (nome, CPF, nascimento). Os demais tipos
+                usam o registro de presenças por função e instrumento.
+              </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">

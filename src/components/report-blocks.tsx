@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui/card";
-import { formatPercent, type RankRow } from "@/lib/report";
+import { formatPercent, type InstrumentRankRow, type RankRow } from "@/lib/report";
 import { cn } from "@/lib/utils";
 
 export function StatCard({
@@ -139,6 +139,133 @@ export function EmptyBlock({ label }: { label: string }) {
   return (
     <div className="text-muted-foreground rounded-md border border-dashed py-10 text-center text-sm">
       {label}
+    </div>
+  );
+}
+
+export function InstrumentTable({ rows }: { rows: InstrumentRankRow[] }) {
+  if (rows.length === 0) {
+    return (
+      <p className="text-muted-foreground py-6 text-center text-sm">
+        Nenhum instrumento registrado.
+      </p>
+    );
+  }
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-muted-foreground border-b text-[11px] tracking-wider uppercase">
+            <th className="py-2 text-left font-medium">Instrumento</th>
+            <th className="w-24 py-2 text-right font-medium">Participantes</th>
+            <th className="w-24 py-2 text-right font-medium">Instrumentos</th>
+            <th className="w-20 py-2 text-right font-medium">%</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.name} className="border-border/60 border-b last:border-0">
+              <td className="py-2 pr-2">
+                <span className="block truncate">{row.name}</span>
+                {row.shared && (
+                  <span className="text-muted-foreground text-[11px]">
+                    Instrumento compartilhado — contabilizado como 1
+                  </span>
+                )}
+              </td>
+              <td className="num py-2 text-right font-medium">{row.count}</td>
+              <td className="num py-2 text-right">{row.instruments}</td>
+              <td className="num text-muted-foreground py-2 text-right">
+                {formatPercent(row.percent)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function SectorPanels({
+  sectors,
+  houseLabel = "Casa de Oração",
+}: {
+  sectors: {
+    id: string | null;
+    name: string;
+    present: number;
+    absent: number;
+    totalHouses: number;
+    attendees: number;
+    percent: number;
+    presentHouses: RankRow[];
+    absentHouses: string[];
+  }[];
+  houseLabel?: string;
+}) {
+  if (sectors.length === 0) {
+    return (
+      <Panel title="Setores">
+        <EmptyBlock label="Nenhum setor cadastrado. Cadastre setores e vincule as casas de oração para ver os totais setoriais." />
+      </Panel>
+    );
+  }
+  return (
+    <div className="space-y-6">
+      <Panel title="Resumo por setor" description="Presentes, ausentes e participação de cada setor.">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-muted-foreground border-b text-[11px] tracking-wider uppercase">
+                <th className="py-2 text-left font-medium">Setor</th>
+                <th className="w-24 py-2 text-right font-medium">Presentes</th>
+                <th className="w-24 py-2 text-right font-medium">Ausentes</th>
+                <th className="w-28 py-2 text-right font-medium">Participantes</th>
+                <th className="w-20 py-2 text-right font-medium">%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sectors.map((s) => (
+                <tr key={s.name} className="border-border/60 border-b last:border-0">
+                  <td className="py-2 pr-2 truncate">{s.name}</td>
+                  <td className="num py-2 text-right font-medium">
+                    {s.present}/{s.totalHouses}
+                  </td>
+                  <td className="num py-2 text-right">{s.absent}</td>
+                  <td className="num py-2 text-right">{s.attendees}</td>
+                  <td className="num text-muted-foreground py-2 text-right">
+                    {formatPercent(s.percent)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+
+      {sectors.map((s) => (
+        <Panel
+          key={s.name}
+          title={s.name}
+          description={`${s.present} presentes · ${s.absent} ausentes · ${s.attendees} participantes`}
+        >
+          <RankTable rows={s.presentHouses} firstColumn={houseLabel} />
+          {s.absentHouses.length > 0 && (
+            <div className="mt-4">
+              <p className="text-muted-foreground mb-2 text-[11px] tracking-wider uppercase">
+                Ausentes ({s.absentHouses.length})
+              </p>
+              <ul className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2 lg:grid-cols-3">
+                {s.absentHouses.map((name) => (
+                  <li key={name} className="border-border/60 truncate border-b py-1.5">
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Panel>
+      ))}
     </div>
   );
 }

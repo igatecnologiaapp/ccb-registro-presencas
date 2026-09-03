@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { EmptyBlock, ErrorBlock, LoadingBlock, Panel } from "@/components/report-blocks";
@@ -10,6 +11,7 @@ import {
   useFunctionInstruments,
   useFunctions,
   useInstruments,
+  useSetAllFunctionInstruments,
   useToggleFunctionInstrument,
 } from "@/lib/data";
 
@@ -37,6 +39,7 @@ function LinksRoute() {
   const instruments = useInstruments();
   const links = useFunctionInstruments();
   const toggle = useToggleFunctionInstrument();
+  const setAll = useSetAllFunctionInstruments();
 
   const [functionId, setFunctionId] = useState<string | null>(null);
 
@@ -113,11 +116,56 @@ function LinksRoute() {
             title="Instrumentos permitidos"
             description={`${linkByInstrument.size} de ${activeInstruments.length} instrumentos vinculados.`}
             actions={
-              linkByInstrument.size > 0 ? (
-                <Badge variant="secondary">Instrumento obrigatório</Badge>
-              ) : (
-                <Badge variant="outline">Sem instrumento</Badge>
-              )
+              <div className="flex flex-wrap items-center gap-2">
+                {linkByInstrument.size > 0 ? (
+                  <Badge variant="secondary">Instrumento obrigatório</Badge>
+                ) : (
+                  <Badge variant="outline">Sem instrumento</Badge>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={setAll.isPending || !currentFunctionId}
+                  onClick={async () => {
+                    if (!currentFunctionId) return;
+                    const missing = activeInstruments
+                      .filter((i) => !linkByInstrument.has(i.id))
+                      .map((i) => i.id);
+                    try {
+                      await setAll.mutateAsync({
+                        functionId: currentFunctionId,
+                        instrumentIds: missing,
+                        select: true,
+                      });
+                      toast.success("Todos os instrumentos foram vinculados.");
+                    } catch (error) {
+                      toast.error((error as Error).message);
+                    }
+                  }}
+                >
+                  Selecionar todos
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={setAll.isPending || linkByInstrument.size === 0}
+                  onClick={async () => {
+                    if (!currentFunctionId) return;
+                    try {
+                      await setAll.mutateAsync({
+                        functionId: currentFunctionId,
+                        instrumentIds: [],
+                        select: false,
+                      });
+                      toast.success("Vínculos removidos desta função.");
+                    } catch (error) {
+                      toast.error((error as Error).message);
+                    }
+                  }}
+                >
+                  Limpar todos
+                </Button>
+              </div>
             }
           >
             {activeInstruments.length === 0 ? (
