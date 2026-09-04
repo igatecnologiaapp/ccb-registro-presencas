@@ -5,13 +5,13 @@ import { useInstruments } from "@/lib/data";
 export const Route = createFileRoute("/_authenticated/_admin/instrumentos")({
   head: () => ({
     meta: [
-      { title: "Cadastro de Instrumentos — Reunião Técnica Musical" },
+      { title: "Cadastro de Instrumentos — Registros de Presenças CCB" },
       {
         name: "description",
         content:
           "Cadastre e mantenha a lista de instrumentos musicais disponíveis para o registro de presenças.",
       },
-      { property: "og:title", content: "Cadastro de Instrumentos — Reunião Técnica Musical" },
+      { property: "og:title", content: "Cadastro de Instrumentos — Registros de Presenças CCB" },
       {
         property: "og:description",
         content: "Mantenha a lista de instrumentos musicais do sistema.",

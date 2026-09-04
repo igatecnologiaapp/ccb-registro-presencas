@@ -34,13 +34,13 @@ import { nameMap } from "@/lib/report";
 export const Route = createFileRoute("/_authenticated/presencas")({
   head: () => ({
     meta: [
-      { title: "Registro de Presença — Reunião Técnica Musical" },
+      { title: "Registro de Presença — Registros de Presenças CCB" },
       {
         name: "description",
         content:
           "Registre participantes por nome, casa de oração, função e instrumento durante a reunião técnica musical.",
       },
-      { property: "og:title", content: "Registro de Presença — Reunião Técnica Musical" },
+      { property: "og:title", content: "Registro de Presença — Registros de Presenças CCB" },
       {
         property: "og:description",
         content: "Lançamento rápido de presenças por casa de oração, função e instrumento.",

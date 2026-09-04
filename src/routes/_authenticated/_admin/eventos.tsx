@@ -46,13 +46,13 @@ import { formatDate, formatTime } from "@/lib/report";
 export const Route = createFileRoute("/_authenticated/_admin/eventos")({
   head: () => ({
     meta: [
-      { title: "Eventos e Reuniões — Reunião Técnica Musical" },
+      { title: "Eventos e Reuniões — Registros de Presenças CCB" },
       {
         name: "description",
         content:
           "Cadastre reuniões técnicas musicais com data, horário e local, e escolha o evento ativo para o registro de presenças.",
       },
-      { property: "og:title", content: "Eventos e Reuniões — Reunião Técnica Musical" },
+      { property: "og:title", content: "Eventos e Reuniões — Registros de Presenças CCB" },
       {
         property: "og:description",
         content: "Gerencie as reuniões técnicas musicais e o evento ativo do sistema.",
@@ -243,7 +243,7 @@ function EventsRoute() {
               <Input
                 id="event-name"
                 className="h-11"
-                placeholder="Reunião Técnica Musical"
+                placeholder="Registros de Presenças CCB"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />

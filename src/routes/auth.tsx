@@ -11,13 +11,13 @@ import { useAuth } from "@/lib/auth";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — Reunião Técnica Musical" },
+      { title: "Entrar — Registros de Presenças CCB" },
       {
         name: "description",
         content:
           "Acesso restrito ao sistema de registro de presenças das reuniões técnicas musicais.",
       },
-      { property: "og:title", content: "Entrar — Reunião Técnica Musical" },
+      { property: "og:title", content: "Entrar — Registros de Presenças CCB" },
       {
         property: "og:description",
         content: "Acesso restrito de administradores e operadores ao registro de presenças.",

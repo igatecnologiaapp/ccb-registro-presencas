@@ -5,13 +5,13 @@ import { useFunctions } from "@/lib/data";
 export const Route = createFileRoute("/_authenticated/_admin/funcoes")({
   head: () => ({
     meta: [
-      { title: "Cadastro de Funções — Reunião Técnica Musical" },
+      { title: "Cadastro de Funções — Registros de Presenças CCB" },
       {
         name: "description",
         content:
           "Cadastre, edite e ative funções utilizadas no registro de presenças das reuniões técnicas musicais.",
       },
-      { property: "og:title", content: "Cadastro de Funções — Reunião Técnica Musical" },
+      { property: "og:title", content: "Cadastro de Funções — Registros de Presenças CCB" },
       {
         property: "og:description",
         content: "Administre as funções utilizadas no registro de presenças.",
