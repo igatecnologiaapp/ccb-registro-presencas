@@ -175,6 +175,21 @@ function AttendanceRoute() {
     );
   }
 
+  if (selectedEvent.event_type === "treinamento") {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <Panel title="Evento de treinamento">
+          <EmptyBlock label="O evento ativo é um Treinamento e utiliza o formulário de inscrições (nome completo, CPF, nascimento, congregação e função)." />
+          <div className="mt-4 flex justify-center">
+            <Button asChild>
+              <Link to="/treinamento">Ir para inscrições de treinamento</Link>
+            </Button>
+          </div>
+        </Panel>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <header>
