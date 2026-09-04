@@ -18,7 +18,7 @@ import {
 export const Route = createFileRoute("/_authenticated/_admin/vinculos")({
   head: () => ({
     meta: [
-      { title: "Vínculos Função × Instrumento — Reunião Técnica Musical" },
+      { title: "Vínculos Função × Instrumento — Registros de Presenças CCB" },
       {
         name: "description",
         content:
