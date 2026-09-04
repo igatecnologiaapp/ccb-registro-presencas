@@ -80,7 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Reunião Técnica Musical — Registro de Presenças" },
+      { title: "Registros de Presenças — Reuniões e Treinamentos | CCB" },
       {
         name: "description",
         content:
