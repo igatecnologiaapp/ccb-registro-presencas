@@ -192,7 +192,7 @@ export function generateReportPdf(event: EventRow, report: ReportData) {
     absentRows.push([report.absentHouses[i] ?? "", report.absentHouses[i + 1] ?? ""]);
   }
   table(
-    ["Ausentes", "Ausentes"],
+    ["Casa de Oração", "Casa de Oração"],
     absentRows.length ? absentRows : [["Nenhuma casa de oração ausente", ""]],
   );
 
