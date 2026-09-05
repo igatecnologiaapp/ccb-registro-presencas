@@ -177,8 +177,27 @@ export function generateReportPdf(event: EventRow, report: ReportData) {
     },
   );
 
+  section(`Casas de Oração Presentes: ${report.presentHouses.length}`);
+  table(
+    ["Casa de Oração", "Representantes", "%"],
+    report.presentHouses.length
+      ? report.presentHouses.map((r) => [r.name, r.count, formatPercent(r.percent)])
+      : [["Nenhuma casa de oração presente", "0", "0,00%"]],
+    { 1: { halign: "right", cellWidth: 30 }, 2: { halign: "right", cellWidth: 22 } },
+  );
+
+  section(`Casas de Oração Ausentes: ${report.absentHouses.length}`);
+  const absentRows: string[][] = [];
+  for (let i = 0; i < report.absentHouses.length; i += 2) {
+    absentRows.push([report.absentHouses[i] ?? "", report.absentHouses[i + 1] ?? ""]);
+  }
+  table(
+    ["Casa de Oração", "Casa de Oração"],
+    absentRows.length ? absentRows : [["Nenhuma casa de oração ausente", ""]],
+  );
+
   if (report.sectors.length) {
-    section("Resumo por Setor");
+    section("Resumo por Setor (complementar)");
     table(
       ["Setor", "Presentes", "Ausentes", "Participantes", "%"],
       report.sectors.map((s) => [
@@ -194,43 +213,6 @@ export function generateReportPdf(event: EventRow, report: ReportData) {
         3: { halign: "right", cellWidth: 26 },
         4: { halign: "right", cellWidth: 22 },
       },
-    );
-
-    for (const s of report.sectors) {
-      section(`${s.name} — Presentes: ${s.present} · Ausentes: ${s.absent}`);
-      table(
-        ["Casa de Oração", "Qt", "%"],
-        s.presentHouses.length
-          ? s.presentHouses.map((r) => [r.name, r.count, formatPercent(r.percent)])
-          : [["Nenhuma casa de oração presente", "0", "0,00%"]],
-        QTY,
-      );
-      if (s.absentHouses.length) {
-        const rows: string[][] = [];
-        for (let i = 0; i < s.absentHouses.length; i += 2) {
-          rows.push([s.absentHouses[i] ?? "", s.absentHouses[i + 1] ?? ""]);
-        }
-        table(["Ausentes", "Ausentes"], rows);
-      }
-    }
-  } else {
-    section(`Casas de Oração Presentes: ${report.presentHouses.length}`);
-    table(
-      ["Casa de Oração", "Qt", "%"],
-      report.presentHouses.length
-        ? report.presentHouses.map((r) => [r.name, r.count, formatPercent(r.percent)])
-        : [["Nenhuma casa de oração presente", "0", "0,00%"]],
-      QTY,
-    );
-
-    section(`Casas de Oração Ausentes: ${report.absentHouses.length}`);
-    const absentRows: string[][] = [];
-    for (let i = 0; i < report.absentHouses.length; i += 2) {
-      absentRows.push([report.absentHouses[i] ?? "", report.absentHouses[i + 1] ?? ""]);
-    }
-    table(
-      ["Ausentes", "Ausentes"],
-      absentRows.length ? absentRows : [["Nenhuma casa de oração ausente", ""]],
     );
   }
 

@@ -274,8 +274,6 @@ function ReportRoute() {
             </Panel>
           </div>
 
-          <SectorPanels sectors={report.sectors} />
-
           <Panel
             title="Casas de oração presentes"
             description="Quantidade de participantes por localidade."
@@ -302,6 +300,8 @@ function ReportRoute() {
               </ul>
             )}
           </Panel>
+
+          <SectorPanels sectors={report.sectors} />
         </>
       )}
     </div>
