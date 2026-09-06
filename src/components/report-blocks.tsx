@@ -214,16 +214,17 @@ export function SectorPanels({
     <div className="space-y-6">
       <Panel title="Resumo por setor" description="Presentes, ausentes e participação de cada setor.">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[520px] text-sm">
             <thead>
               <tr className="text-muted-foreground border-b text-[11px] tracking-wider uppercase">
-                <th className="py-2 text-left font-medium">Setor</th>
-                <th className="w-24 py-2 text-right font-medium">Presentes</th>
-                <th className="w-24 py-2 text-right font-medium">Ausentes</th>
-                <th className="w-28 py-2 text-right font-medium">Participantes</th>
+                <th className="py-2 pr-2 text-left font-medium">Setor</th>
+                <th className="w-24 py-2 pr-2 text-right font-medium">Presentes</th>
+                <th className="w-24 py-2 pr-2 text-right font-medium">Ausentes</th>
+                <th className="w-28 py-2 pr-2 text-right font-medium">Participantes</th>
                 <th className="w-20 py-2 text-right font-medium">%</th>
               </tr>
             </thead>
+
             <tbody>
               {sectors.map((s) => (
                 <tr key={s.name} className="border-border/60 border-b last:border-0">
