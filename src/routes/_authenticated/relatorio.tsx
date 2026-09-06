@@ -206,11 +206,19 @@ function ReportRoute() {
                 value={`${report.presentHouses.length}/${report.activeHouses}`}
                 hint={`${report.absentHouses.length} ausentes`}
               />
-              <StatCard label="Idade média" value={report.averageAge.toFixed(1)} hint="anos" />
+              <StatCard label="Idade média" value={report.averageAge.toFixed(1).replace(".", ",")} hint="anos" />
             </div>
 
             <Panel title="Ranking por função" description="Ordem decrescente de quantidade.">
               <RankTable rows={report.functionRanking} firstColumn="Função" />
+            </Panel>
+
+            <Panel
+              title="Congregações presentes"
+              description="Quantidade de inscritos por congregação."
+              actions={<Badge variant="secondary">{report.presentHouses.length} presentes</Badge>}
+            >
+              <RankTable rows={report.presentHouses} firstColumn="Congregação" />
             </Panel>
 
             <SectorPanels sectors={report.sectors} houseLabel="Congregação" />

@@ -248,7 +248,7 @@ export function generateTrainingPdf(
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9.5);
   doc.text(
-    `Congregações presentes: ${report.presentHouses.length} de ${report.activeHouses}     Ausentes: ${report.absentHouses.length}     Idade média: ${report.averageAge.toFixed(1)}`,
+    `Congregações presentes: ${report.presentHouses.length} de ${report.activeHouses}     Ausentes: ${report.absentHouses.length}     Idade média: ${report.averageAge.toFixed(1).replace(".", ",")}`,
     pageWidth / 2,
     71,
     { align: "center" },
@@ -287,8 +287,17 @@ export function generateTrainingPdf(
     QTY,
   );
 
+  section(`Congregações Presentes: ${report.presentHouses.length}`);
+  table(
+    ["Congregação", "Qt", "%"],
+    report.presentHouses.length
+      ? report.presentHouses.map((r) => [r.name, r.count, formatPercent(r.percent)])
+      : [["Nenhuma congregação presente", "0", "0,00%"]],
+    QTY,
+  );
+
   if (report.sectors.length) {
-    section("Resumo por Setor");
+    section("Resumo por Setor (complementar)");
     table(
       ["Setor", "Presentes", "Ausentes", "Participantes", "%"],
       report.sectors.map((s) => [
@@ -307,14 +316,6 @@ export function generateTrainingPdf(
     );
   }
 
-  section(`Congregações Presentes: ${report.presentHouses.length}`);
-  table(
-    ["Congregação", "Qt", "%"],
-    report.presentHouses.length
-      ? report.presentHouses.map((r) => [r.name, r.count, formatPercent(r.percent)])
-      : [["Nenhuma congregação presente", "0", "0,00%"]],
-    QTY,
-  );
 
   footer(doc, pageWidth, margin);
   doc.save(`treinamento_${slugify(event)}_${event.date}.pdf`);

@@ -151,7 +151,7 @@ function Dashboard() {
               value={`${training.presentHouses.length}/${training.activeHouses}`}
               hint={`${training.absentHouses.length} ausentes`}
             />
-            <StatCard label="Idade média" value={training.averageAge.toFixed(1)} hint="anos" />
+            <StatCard label="Idade média" value={training.averageAge.toFixed(1).replace(".", ",")} hint="anos" />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
