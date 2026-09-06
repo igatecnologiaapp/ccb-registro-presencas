@@ -213,6 +213,14 @@ function ReportRoute() {
               <RankTable rows={report.functionRanking} firstColumn="Função" />
             </Panel>
 
+            <Panel
+              title="Congregações presentes"
+              description="Quantidade de inscritos por congregação."
+              actions={<Badge variant="secondary">{report.presentHouses.length} presentes</Badge>}
+            >
+              <RankTable rows={report.presentHouses} firstColumn="Congregação" />
+            </Panel>
+
             <SectorPanels sectors={report.sectors} houseLabel="Congregação" />
           </>
         )}
