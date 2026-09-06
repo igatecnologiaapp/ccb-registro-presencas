@@ -206,7 +206,7 @@ function ReportRoute() {
                 value={`${report.presentHouses.length}/${report.activeHouses}`}
                 hint={`${report.absentHouses.length} ausentes`}
               />
-              <StatCard label="Idade média" value={report.averageAge.toFixed(1)} hint="anos" />
+              <StatCard label="Idade média" value={report.averageAge.toFixed(1).replace(".", ",")} hint="anos" />
             </div>
 
             <Panel title="Ranking por função" description="Ordem decrescente de quantidade.">

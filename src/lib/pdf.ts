@@ -248,7 +248,7 @@ export function generateTrainingPdf(
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9.5);
   doc.text(
-    `Congregações presentes: ${report.presentHouses.length} de ${report.activeHouses}     Ausentes: ${report.absentHouses.length}     Idade média: ${report.averageAge.toFixed(1)}`,
+    `Congregações presentes: ${report.presentHouses.length} de ${report.activeHouses}     Ausentes: ${report.absentHouses.length}     Idade média: ${report.averageAge.toFixed(1).replace(".", ",")}`,
     pageWidth / 2,
     71,
     { align: "center" },
