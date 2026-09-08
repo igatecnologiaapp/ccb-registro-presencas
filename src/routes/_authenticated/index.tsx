@@ -1,5 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ClipboardList, FileText, GraduationCap, Link2, Map } from "lucide-react";
+import { useEffect } from "react";
+import { useAuth } from "@/lib/auth";
+
 import { Button } from "@/components/ui/button";
 import {
   EmptyBlock,
