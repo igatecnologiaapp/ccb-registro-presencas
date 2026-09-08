@@ -158,7 +158,7 @@ function UserBox() {
           <p className="text-sidebar-foreground truncate text-sm font-medium">{label}</p>
           <p className="text-sidebar-foreground/60 flex items-center gap-1 text-xs">
             <ShieldCheck className="size-3" />
-            {role === "admin" ? "Administrador" : role === "operator" ? "Operador" : "Sem perfil"}
+            {roleLabel(role)}
           </p>
         </div>
       </div>
