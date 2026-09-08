@@ -33,6 +33,9 @@ function HousesRoute() {
     [sectors.data],
   );
 
+  const withoutSector = (data ?? []).filter((h) => h.active && !h.sector_id).length;
+
+
   return (
     <CatalogPage<PrayerHouseRow>
       table="prayer_houses"
