@@ -9,7 +9,6 @@ import {
   Map,
   Menu,
   Music2,
-  ShieldHalf,
   UserCog,
   Users,
   Church,
