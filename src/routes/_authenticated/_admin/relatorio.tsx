@@ -33,7 +33,7 @@ import {
 } from "@/lib/report";
 import { generateReportPdf, generateTrainingPdf } from "@/lib/pdf";
 
-export const Route = createFileRoute("/_authenticated/relatorio")({
+export const Route = createFileRoute("/_authenticated/_admin/relatorio")({
   head: () => ({
     meta: [
       { title: "Relatório do Evento — Registros de Presenças CCB" },

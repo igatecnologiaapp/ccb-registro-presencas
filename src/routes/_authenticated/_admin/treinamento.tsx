@@ -29,7 +29,7 @@ import {
 } from "@/lib/data";
 import { ageFrom, formatCpf, formatDate, isValidCpf, nameMap } from "@/lib/report";
 
-export const Route = createFileRoute("/_authenticated/treinamento")({
+export const Route = createFileRoute("/_authenticated/_admin/treinamento")({
   head: () => ({
     meta: [
       { title: "Inscrições de Treinamento — Registros de Presenças CCB" },
