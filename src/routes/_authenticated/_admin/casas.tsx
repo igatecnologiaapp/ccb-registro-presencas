@@ -33,12 +33,20 @@ function HousesRoute() {
     [sectors.data],
   );
 
+  const withoutSector = (data ?? []).filter((h) => h.active && !h.sector_id).length;
+
+
   return (
     <CatalogPage<PrayerHouseRow>
       table="prayer_houses"
       title="Casas de Oração"
       singular="Casa de Oração"
-      description="Todas as casas de oração ativas entram no cálculo de presentes e ausentes do relatório. Vincule cada casa ao seu setor para obter os totais setoriais."
+      description={`Todas as casas de oração ativas entram no cálculo de presentes e ausentes do relatório. Vincule cada casa ao seu setor para obter os totais setoriais.${
+        withoutSector > 0
+          ? ` Atenção: ${withoutSector} ${withoutSector === 1 ? "casa ativa está" : "casas ativas estão"} sem setor e ${withoutSector === 1 ? "aparece" : "aparecem"} agrupada${withoutSector === 1 ? "" : "s"} como “Sem setor” no relatório.`
+          : ""
+      }`}
+
       rows={data}
       isLoading={isLoading}
       isError={isError}

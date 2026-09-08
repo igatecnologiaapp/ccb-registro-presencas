@@ -400,3 +400,70 @@ export function useDeleteTrainingAttendee() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["training_attendees"] }),
   });
 }
+
+/* ---------------- usuários e perfis ---------------- */
+
+export type AppUserRow = {
+  id: string;
+  display_name: string;
+  email: string;
+  active: boolean;
+  created_at: string;
+  role: "admin" | "operator" | null;
+};
+
+export function useAppUsers() {
+  return useQuery({
+    queryKey: ["app_users"],
+    queryFn: async (): Promise<AppUserRow[]> => {
+      const [profiles, roles] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("id, display_name, email, active, created_at")
+          .order("created_at"),
+        supabase.from("user_roles").select("user_id, role"),
+      ]);
+      if (profiles.error) throw new Error(profiles.error.message);
+      if (roles.error) throw new Error(roles.error.message);
+      const roleByUser = new Map<string, "admin" | "operator">();
+      for (const r of roles.data ?? []) {
+        const role = r.role as "admin" | "operator";
+        if (role === "admin") roleByUser.set(r.user_id, "admin");
+        else if (!roleByUser.has(r.user_id)) roleByUser.set(r.user_id, "operator");
+      }
+      return (profiles.data ?? []).map((p) => ({
+        ...p,
+        role: roleByUser.get(p.id) ?? null,
+      }));
+    },
+  });
+}
+
+export function useSetUserRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { userId: string; role: "admin" | "operator" }) => {
+      const del = await supabase.from("user_roles").delete().eq("user_id", input.userId);
+      if (del.error) throw new Error(del.error.message);
+      const ins = await supabase
+        .from("user_roles")
+        .insert({ user_id: input.userId, role: input.role });
+      if (ins.error) throw new Error(ins.error.message);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
+  });
+}
+
+export function useSetUserActive() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { userId: string; active: boolean }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ active: input.active })
+        .eq("id", input.userId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
+  });
+}

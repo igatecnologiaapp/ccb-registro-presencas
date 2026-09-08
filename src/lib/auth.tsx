@@ -6,15 +6,27 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type AppRole = "admin" | "operator";
 
+export const ROLE_LABELS: Record<AppRole, string> = {
+  admin: "Administrador",
+  operator: "Colaborador",
+};
+
+export function roleLabel(role: AppRole | null): string {
+  return role ? ROLE_LABELS[role] : "Sem perfil";
+}
+
 type AuthValue = {
   session: Session | null;
   loading: boolean;
   role: AppRole | null;
   displayName: string;
+  email: string;
+  active: boolean;
   isAdmin: boolean;
   roleLoading: boolean;
   roleError: boolean;
 };
+
 
 const AuthContext = createContext<AuthValue | null>(null);
 
@@ -62,7 +74,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (bootstrapError) throw bootstrapError;
 
       const [profile, roles] = await Promise.all([
-        supabase.from("profiles").select("display_name").eq("id", currentUserId).maybeSingle(),
+        supabase
+          .from("profiles")
+          .select("display_name, email, active")
+          .eq("id", currentUserId)
+          .maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", currentUserId),
       ]);
       if (profile.error) throw profile.error;
@@ -74,7 +90,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         : list.includes("operator")
           ? "operator"
           : null;
-      return { displayName: profile.data?.display_name ?? "", role };
+      return {
+        displayName: profile.data?.display_name ?? "",
+        email: profile.data?.email ?? "",
+        active: profile.data?.active ?? true,
+        role,
+      };
     },
   });
 
@@ -83,9 +104,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     role: meQuery.data?.role ?? null,
     displayName: meQuery.data?.displayName ?? "",
+    email: meQuery.data?.email ?? "",
+    active: meQuery.data?.active ?? true,
     isAdmin: meQuery.data?.role === "admin",
     roleLoading: !!userId && meQuery.isPending,
     roleError: !!userId && meQuery.isError,
+
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

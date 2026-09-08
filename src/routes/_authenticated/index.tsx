@@ -1,5 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ClipboardList, FileText, GraduationCap, Link2, Map } from "lucide-react";
+import { useEffect } from "react";
+import { useAuth } from "@/lib/auth";
+
 import { Button } from "@/components/ui/button";
 import {
   EmptyBlock,
@@ -58,8 +61,19 @@ const SHORTCUTS = [
 ] as const;
 
 function Dashboard() {
+  const { isAdmin, roleLoading, roleError } = useAuth();
+  const navigate = useNavigate();
+
+  // Colaborador vai direto para o registro de presenças.
+  useEffect(() => {
+    if (!roleLoading && !roleError && !isAdmin) {
+      void navigate({ to: "/presencas", replace: true });
+    }
+  }, [isAdmin, roleLoading, roleError, navigate]);
+
   const { selectedEvent, selectedEventId, isLoading: eventsLoading } = useSelectedEvent();
   const isTraining = selectedEvent?.event_type === "treinamento";
+
 
   const attendees = useAttendees(isTraining ? null : selectedEventId);
   const trainees = useTrainingAttendees(isTraining ? selectedEventId : null);
