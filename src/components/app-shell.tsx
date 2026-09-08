@@ -9,11 +9,13 @@ import {
   Map,
   Menu,
   Music2,
+  ShieldHalf,
+  UserCog,
   Users,
   Church,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { useAuth, useSignOut } from "@/lib/auth";
+import { useAuth, useSignOut, roleLabel } from "@/lib/auth";
 import { LogOut, ShieldCheck, UserCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -23,46 +25,96 @@ import { eventTypeLabel } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/report";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
-  { to: "/presencas", label: "Registro de Presença", icon: ClipboardList, adminOnly: false },
-  { to: "/treinamento", label: "Inscrições de Treinamento", icon: GraduationCap, adminOnly: false },
-  { to: "/relatorio", label: "Relatório do Evento", icon: FileText, adminOnly: false },
-  { to: "/eventos", label: "Eventos", icon: CalendarDays, adminOnly: true },
-  { to: "/funcoes", label: "Funções", icon: Users, adminOnly: true },
-  { to: "/instrumentos", label: "Instrumentos", icon: Music2, adminOnly: true },
-  { to: "/vinculos", label: "Função × Instrumento", icon: Link2, adminOnly: true },
-  { to: "/setores", label: "Setores", icon: Map, adminOnly: true },
-  { to: "/casas", label: "Casas de Oração", icon: Church, adminOnly: true },
-] as const;
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  adminOnly: boolean;
+};
+
+const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
+  {
+    title: "Início",
+    items: [{ to: "/", label: "Dashboard", icon: LayoutDashboard, adminOnly: true }],
+  },
+  {
+    title: "Registros",
+    items: [
+      { to: "/presencas", label: "Registrar Presenças", icon: ClipboardList, adminOnly: false },
+      {
+        to: "/treinamento",
+        label: "Inscrições de Treinamento",
+        icon: GraduationCap,
+        adminOnly: true,
+      },
+      { to: "/relatorio", label: "Relatórios", icon: FileText, adminOnly: true },
+    ],
+  },
+  {
+    title: "Eventos",
+    items: [{ to: "/eventos", label: "Eventos", icon: CalendarDays, adminOnly: true }],
+  },
+  {
+    title: "Cadastros",
+    items: [
+      { to: "/casas", label: "Casas de Oração", icon: Church, adminOnly: true },
+      { to: "/setores", label: "Setores", icon: Map, adminOnly: true },
+      { to: "/funcoes", label: "Funções", icon: Users, adminOnly: true },
+      { to: "/instrumentos", label: "Instrumentos", icon: Music2, adminOnly: true },
+      { to: "/vinculos", label: "Funções × Instrumentos", icon: Link2, adminOnly: true },
+    ],
+  },
+  {
+    title: "Administração",
+    items: [
+      { to: "/usuarios", label: "Usuários e Perfis", icon: UserCog, adminOnly: true },
+    ],
+  },
+];
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { isAdmin } = useAuth();
+
+  const groups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => !item.adminOnly || isAdmin),
+  })).filter((group) => group.items.length > 0);
+
   return (
-    <nav className="flex flex-col gap-1">
-      {NAV.filter((item) => !item.adminOnly || isAdmin).map(({ to, label, icon: Icon }) => {
-        const active = pathname === to;
-        return (
-          <Link
-            key={to}
-            to={to}
-            onClick={onNavigate}
-            className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
-              active
-                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
-            )}
-          >
-            <Icon className="size-4 shrink-0" />
-            {label}
-          </Link>
-        );
-      })}
+    <nav className="flex flex-col gap-4">
+      {groups.map((group) => (
+        <div key={group.title}>
+          <p className="text-sidebar-foreground/45 px-3 pb-1 text-[10px] font-semibold tracking-[0.14em] uppercase">
+            {group.title}
+          </p>
+          <div className="flex flex-col gap-1">
+            {group.items.map(({ to, label, icon: Icon }) => {
+              const active = pathname === to;
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={onNavigate}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+                    active
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+                  )}
+                >
+                  <Icon className="size-4 shrink-0" />
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </nav>
   );
 }
+
 
 function EventPicker() {
   const { events, selectedEventId, selectEvent } = useSelectedEvent();
