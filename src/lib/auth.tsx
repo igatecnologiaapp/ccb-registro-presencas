@@ -6,15 +6,27 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type AppRole = "admin" | "operator";
 
+export const ROLE_LABELS: Record<AppRole, string> = {
+  admin: "Administrador",
+  operator: "Colaborador",
+};
+
+export function roleLabel(role: AppRole | null): string {
+  return role ? ROLE_LABELS[role] : "Sem perfil";
+}
+
 type AuthValue = {
   session: Session | null;
   loading: boolean;
   role: AppRole | null;
   displayName: string;
+  email: string;
+  active: boolean;
   isAdmin: boolean;
   roleLoading: boolean;
   roleError: boolean;
 };
+
 
 const AuthContext = createContext<AuthValue | null>(null);
 
