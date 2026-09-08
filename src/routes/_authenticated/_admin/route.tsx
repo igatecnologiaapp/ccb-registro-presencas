@@ -1,6 +1,6 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { ShieldAlert } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 import { LoadingBlock } from "@/components/report-blocks";
 import { useAuth } from "@/lib/auth";
 
@@ -10,6 +10,14 @@ export const Route = createFileRoute("/_authenticated/_admin")({
 
 function AdminLayout() {
   const { isAdmin, roleLoading, roleError } = useAuth();
+  const navigate = useNavigate();
+
+  // Perfil Colaborador não acessa telas administrativas, nem digitando o endereço.
+  useEffect(() => {
+    if (!roleLoading && !roleError && !isAdmin) {
+      void navigate({ to: "/presencas", replace: true });
+    }
+  }, [isAdmin, roleLoading, roleError, navigate]);
 
   if (roleLoading) return <LoadingBlock />;
 
@@ -21,8 +29,8 @@ function AdminLayout() {
         </div>
         <h1 className="mt-4 text-lg font-semibold">Não foi possível validar seu perfil</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          Atualize a página para tentar novamente. Se o problema continuar, encerre a sessão e
-          entre novamente.
+          Atualize a página para tentar novamente. Se o problema continuar, encerre a sessão e entre
+          novamente.
         </p>
       </div>
     );
@@ -36,12 +44,9 @@ function AdminLayout() {
         </div>
         <h1 className="mt-4 text-lg font-semibold">Acesso restrito</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          Esta área de cadastros é exclusiva do perfil <strong>Administrador</strong>. Seu perfil
-          atual permite registrar presenças e consultar relatórios.
+          Esta área é exclusiva do perfil <strong>Administrador</strong>. Redirecionando para o
+          registro de presenças…
         </p>
-        <Button asChild className="mt-6">
-          <Link to="/presencas">Ir para o registro de presenças</Link>
-        </Button>
       </div>
     );
   }
