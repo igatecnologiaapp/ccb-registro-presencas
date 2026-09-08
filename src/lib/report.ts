@@ -114,6 +114,10 @@ function buildSectors(
   countsByHouseId: Map<string, number>,
   total: number,
 ): SectorSummaryRow[] {
+  const activeSectorIds = new Set(sectors.filter((s) => s.active).map((s) => s.id));
+  // Casas com setor inativo ou inexistente entram em "Sem setor" para nunca sumirem do resumo.
+  const sectorOf = (h: PrayerHouseRow) =>
+    h.sector_id && activeSectorIds.has(h.sector_id) ? h.sector_id : null;
   const activeHouses = houses.filter((h) => h.active);
   const groups: SectorSummaryRow[] = [];
   const ordered: { id: string | null; name: string }[] = [
@@ -124,7 +128,7 @@ function buildSectors(
   ];
 
   for (const group of ordered) {
-    const list = activeHouses.filter((h) => (h.sector_id ?? null) === group.id);
+    const list = activeHouses.filter((h) => sectorOf(h) === group.id);
     if (list.length === 0) continue;
     const present = list.filter((h) => (countsByHouseId.get(h.id) ?? 0) > 0);
     const attendees = list.reduce((acc, h) => acc + (countsByHouseId.get(h.id) ?? 0), 0);
