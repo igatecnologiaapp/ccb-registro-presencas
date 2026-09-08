@@ -21,6 +21,7 @@ import { Route as AuthenticatedAdminEventosRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminFuncoesRouteImport } from './routes/_authenticated/_admin/funcoes'
 import { Route as AuthenticatedAdminInstrumentosRouteImport } from './routes/_authenticated/_admin/instrumentos'
 import { Route as AuthenticatedAdminSetoresRouteImport } from './routes/_authenticated/_admin/setores'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/_admin/usuarios'
 import { Route as AuthenticatedAdminVinculosRouteImport } from './routes/_authenticated/_admin/vinculos'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -86,6 +87,12 @@ const AuthenticatedAdminSetoresRoute =
     path: '/setores',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/usuarios',
+    path: '/usuarios',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminVinculosRoute =
   AuthenticatedAdminVinculosRouteImport.update({
     id: '/vinculos',
@@ -104,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/funcoes': typeof AuthenticatedAdminFuncoesRoute
   '/instrumentos': typeof AuthenticatedAdminInstrumentosRoute
   '/setores': typeof AuthenticatedAdminSetoresRoute
+  '/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/vinculos': typeof AuthenticatedAdminVinculosRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +125,7 @@ export interface FileRoutesByTo {
   '/funcoes': typeof AuthenticatedAdminFuncoesRoute
   '/instrumentos': typeof AuthenticatedAdminInstrumentosRoute
   '/setores': typeof AuthenticatedAdminSetoresRoute
+  '/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/vinculos': typeof AuthenticatedAdminVinculosRoute
 }
 export interface FileRoutesById {
@@ -133,6 +142,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/funcoes': typeof AuthenticatedAdminFuncoesRoute
   '/_authenticated/_admin/instrumentos': typeof AuthenticatedAdminInstrumentosRoute
   '/_authenticated/_admin/setores': typeof AuthenticatedAdminSetoresRoute
+  '/_authenticated/_admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/_admin/vinculos': typeof AuthenticatedAdminVinculosRoute
 }
 export interface FileRouteTypes {
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/funcoes'
     | '/instrumentos'
     | '/setores'
+    | '/usuarios'
     | '/vinculos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/funcoes'
     | '/instrumentos'
     | '/setores'
+    | '/usuarios'
     | '/vinculos'
   id:
     | '__root__'
@@ -176,6 +188,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/funcoes'
     | '/_authenticated/_admin/instrumentos'
     | '/_authenticated/_admin/setores'
+    | '/_authenticated/_admin/usuarios'
     | '/_authenticated/_admin/vinculos'
   fileRoutesById: FileRoutesById
 }
@@ -270,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSetoresRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/usuarios': {
+      id: '/_authenticated/_admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/vinculos': {
       id: '/_authenticated/_admin/vinculos'
       path: '/vinculos'
@@ -286,6 +306,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminFuncoesRoute: typeof AuthenticatedAdminFuncoesRoute
   AuthenticatedAdminInstrumentosRoute: typeof AuthenticatedAdminInstrumentosRoute
   AuthenticatedAdminSetoresRoute: typeof AuthenticatedAdminSetoresRoute
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminVinculosRoute: typeof AuthenticatedAdminVinculosRoute
 }
 
@@ -296,6 +317,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminFuncoesRoute: AuthenticatedAdminFuncoesRoute,
     AuthenticatedAdminInstrumentosRoute: AuthenticatedAdminInstrumentosRoute,
     AuthenticatedAdminSetoresRoute: AuthenticatedAdminSetoresRoute,
+    AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
     AuthenticatedAdminVinculosRoute: AuthenticatedAdminVinculosRoute,
   }
 
