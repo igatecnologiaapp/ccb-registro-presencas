@@ -23,6 +23,7 @@ import { SearchSelect } from "@/components/search-select";
 import { eventTypeLabel } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/report";
 import { cn } from "@/lib/utils";
+import logoCcb from "@/assets/logo-ccb.png.asset.json";
 
 type NavItem = {
   to: string;
@@ -134,6 +135,13 @@ function EventPicker() {
 function Brand() {
   return (
     <div className="border-sidebar-border border-b px-5 py-5">
+      <img
+        src={logoCcb.url}
+        alt="Logotipo oficial da Congregação Cristã no Brasil"
+        width={568}
+        height={288}
+        className="mb-3 h-auto w-40 max-w-full rounded-sm bg-white p-1.5"
+      />
       <p className="doc-title text-sidebar-foreground text-lg leading-tight font-semibold tracking-wide">
         Congregação Cristã no Brasil
       </p>
