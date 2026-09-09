@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Church, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import logoCcb from "@/assets/logo-ccb.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -83,9 +84,13 @@ function AuthPage() {
     <div className="bg-sidebar flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <div className="bg-sidebar-accent text-sidebar-accent-foreground mx-auto flex size-12 items-center justify-center rounded-xl">
-            <Church className="size-6" />
-          </div>
+          <img
+            src={logoCcb.url}
+            alt="Logotipo oficial da Congregação Cristã no Brasil"
+            width={568}
+            height={288}
+            className="mx-auto h-auto w-56 max-w-full rounded-md bg-white p-2"
+          />
           <p className="text-sidebar-foreground/60 mt-4 text-[10px] tracking-[0.18em] uppercase">
             Congregação Cristã no Brasil
           </p>

@@ -10,6 +10,7 @@ import {
   type ReportData,
   type TrainingReportData,
 } from "./report";
+import { LOGO_CCB_DATA_URL, LOGO_CCB_HEIGHT, LOGO_CCB_WIDTH } from "./logo";
 
 const INK: [number, number, number] = [38, 52, 64];
 const HEAD: [number, number, number] = [45, 74, 90];
@@ -28,6 +29,11 @@ function slugify(event: EventRow) {
 }
 
 function header(doc: Doc, event: EventRow, pageWidth: number, margin: number) {
+  // Logotipo oficial, proporção original preservada (568 x 288).
+  const logoW = 32;
+  const logoH = (logoW * LOGO_CCB_HEIGHT) / LOGO_CCB_WIDTH;
+  doc.addImage(LOGO_CCB_DATA_URL, "PNG", margin, 10, logoW, logoH);
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.setTextColor(...INK);

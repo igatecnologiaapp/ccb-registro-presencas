@@ -1,0 +1,1 @@
+DELETE FROM public.function_instruments fi USING public.functions f WHERE fi.function_id = f.id AND f.name = 'ANCIÃO';
