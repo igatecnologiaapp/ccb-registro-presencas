@@ -423,7 +423,7 @@ export function useAppUsers() {
       const [profiles, roles] = await Promise.all([
         supabase
           .from("profiles")
-          .select("id, display_name, email, active, created_at")
+          .select("id, display_name, email, active, created_at, sector_id, all_prayer_houses")
           .order("created_at"),
         supabase.from("user_roles").select("user_id, role"),
       ]);
