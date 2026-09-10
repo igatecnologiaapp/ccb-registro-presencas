@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { createAppUser } from "@/lib/admin-users.functions";
 
 export const EVENT_TYPES = [
   { value: "treinamento", label: "Treinamento" },
