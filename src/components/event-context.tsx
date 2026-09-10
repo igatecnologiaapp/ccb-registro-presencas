@@ -3,11 +3,17 @@ import { useEvents, type EventRow } from "@/lib/data";
 
 const STORAGE_KEY = "rtm.selectedEventId";
 
+/** Estado válido "Sem evento": nenhum evento selecionado, sem seleção automática. */
+export const NO_EVENT = "__none__";
+
 type EventContextValue = {
   events: EventRow[];
   selectedEvent: EventRow | null;
   selectedEventId: string | null;
+  /** Aceita o id de um evento ou NO_EVENT para o estado "Sem evento". */
   selectEvent: (id: string) => void;
+  /** true quando o usuário escolheu explicitamente "Sem evento". */
+  noEventSelected: boolean;
   isLoading: boolean;
   isError: boolean;
 };
@@ -28,6 +34,7 @@ export function SelectedEventProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!hydrated || list.length === 0) return;
+    if (selectedId === NO_EVENT) return;
     const valid = selectedId && list.some((e) => e.id === selectedId);
     if (!valid) {
       const first = list[0]!;
@@ -39,8 +46,10 @@ export function SelectedEventProvider({ children }: { children: ReactNode }) {
   const value = useMemo<EventContextValue>(
     () => ({
       events: list,
-      selectedEventId: selectedId,
-      selectedEvent: list.find((e) => e.id === selectedId) ?? null,
+      selectedEventId: selectedId === NO_EVENT ? null : selectedId,
+      selectedEvent:
+        selectedId === NO_EVENT ? null : (list.find((e) => e.id === selectedId) ?? null),
+      noEventSelected: selectedId === NO_EVENT,
       selectEvent: (id: string) => {
         setSelectedId(id);
         window.localStorage.setItem(STORAGE_KEY, id);

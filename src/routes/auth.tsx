@@ -95,7 +95,7 @@ function AuthPage() {
             Congregação Cristã no Brasil
           </p>
           <h1 className="doc-title text-sidebar-foreground mt-1 text-xl">
-            Registros de Presenças Reuniões e Treinamentos
+            Registros de Presenças
           </h1>
         </div>
 

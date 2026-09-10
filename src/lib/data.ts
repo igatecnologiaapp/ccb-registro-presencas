@@ -1,11 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { createAppUser } from "@/lib/admin-users.functions";
 
 export const EVENT_TYPES = [
   { value: "treinamento", label: "Treinamento" },
   { value: "reuniao_musical", label: "Reunião Musical" },
   { value: "reuniao_ministerial", label: "Reunião Ministerial" },
   { value: "reuniao_colaboradores", label: "Reunião de Colaboradores" },
+  { value: "ensaio_musical", label: "Ensaio Musical" },
+  { value: "gem", label: "GEM" },
 ] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number]["value"];
@@ -409,6 +413,8 @@ export type AppUserRow = {
   email: string;
   active: boolean;
   created_at: string;
+  sector_id: string | null;
+  all_prayer_houses: boolean;
   role: "admin" | "operator" | null;
 };
 
@@ -419,7 +425,7 @@ export function useAppUsers() {
       const [profiles, roles] = await Promise.all([
         supabase
           .from("profiles")
-          .select("id, display_name, email, active, created_at")
+          .select("id, display_name, email, active, created_at, sector_id, all_prayer_houses")
           .order("created_at"),
         supabase.from("user_roles").select("user_id, role"),
       ]);
@@ -466,4 +472,52 @@ export function useSetUserActive() {
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
   });
+}
+
+export function useSetUserAccess() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      userId: string;
+      sector_id?: string | null;
+      all_prayer_houses?: boolean;
+    }) => {
+      const payload: Record<string, unknown> = {};
+      if ("sector_id" in input) payload.sector_id = input.sector_id ?? null;
+      if ("all_prayer_houses" in input) payload.all_prayer_houses = input.all_prayer_houses;
+      const { error } = await supabase.from("profiles").update(payload).eq("id", input.userId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
+  });
+}
+
+export function useCreateAppUser() {
+  const qc = useQueryClient();
+  const create = useServerFn(createAppUser);
+  return useMutation({
+    mutationFn: async (input: {
+      email: string;
+      password: string;
+      displayName: string;
+      role: "admin" | "operator";
+      sectorId: string | null;
+      allPrayerHouses: boolean;
+    }) => create({ data: input }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
+  });
+}
+
+/**
+ * Casas de Oração que o usuário atual pode utilizar no registro de presenças.
+ * Administrador e Colaborador liberado veem todas; os demais veem apenas as
+ * casas do próprio setor. A regra também é aplicada no banco de dados (RLS).
+ */
+export function filterAllowedHouses(
+  houses: PrayerHouseRow[],
+  access: { isAdmin: boolean; allPrayerHouses: boolean; sectorId: string | null },
+): PrayerHouseRow[] {
+  if (access.isAdmin || access.allPrayerHouses) return houses;
+  if (!access.sectorId) return [];
+  return houses.filter((h) => h.sector_id === access.sectorId);
 }

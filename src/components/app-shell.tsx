@@ -13,12 +13,13 @@ import {
   Users,
   Church,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useAuth, useSignOut, roleLabel } from "@/lib/auth";
 import { LogOut, ShieldCheck, UserCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useSelectedEvent } from "@/components/event-context";
+import { NO_EVENT, useSelectedEvent } from "@/components/event-context";
 import { SearchSelect } from "@/components/search-select";
 import { eventTypeLabel } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/report";
@@ -72,6 +73,46 @@ const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   },
 ];
 
+const GROUP_ICONS: Record<string, typeof LayoutDashboard> = {
+  Registros: ClipboardList,
+  Eventos: CalendarDays,
+  Cadastros: Church,
+  Administração: UserCog,
+};
+
+function NavLink({
+  to,
+  label,
+  icon: Icon,
+  active,
+  onNavigate,
+  nested,
+}: {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  active: boolean;
+  onNavigate?: () => void;
+  nested?: boolean;
+}) {
+  return (
+    <Link
+      to={to}
+      onClick={onNavigate}
+      className={cn(
+        "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+        nested && "ml-3",
+        active
+          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+          : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+      )}
+    >
+      <Icon className="size-4 shrink-0" />
+      <span className="min-w-0 truncate">{label}</span>
+    </Link>
+  );
+}
+
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { isAdmin } = useAuth();
@@ -81,50 +122,86 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
     items: group.items.filter((item) => !item.adminOnly || isAdmin),
   })).filter((group) => group.items.length > 0);
 
+  const activeGroup =
+    groups.find((group) => group.items.some((item) => item.to === pathname))?.title ?? null;
+  const [openGroup, setOpenGroup] = useState<string | null>(activeGroup);
+
+  useEffect(() => {
+    if (activeGroup) setOpenGroup(activeGroup);
+  }, [activeGroup]);
+
   return (
-    <nav className="flex flex-col gap-4">
-      {groups.map((group) => (
-        <div key={group.title}>
-          <p className="text-sidebar-foreground/45 px-3 pb-1 text-[10px] font-semibold tracking-[0.14em] uppercase">
-            {group.title}
-          </p>
-          <div className="flex flex-col gap-1">
-            {group.items.map(({ to, label, icon: Icon }) => {
-              const active = pathname === to;
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  onClick={onNavigate}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
-                    active
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
-                  )}
-                >
-                  <Icon className="size-4 shrink-0" />
-                  {label}
-                </Link>
-              );
-            })}
+    <nav className="flex flex-col gap-1">
+      {groups.map((group) => {
+        // "Início" é acesso direto ao Dashboard — sem submenu.
+        if (group.title === "Início") {
+          return group.items.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              label={item.label}
+              icon={item.icon}
+              active={pathname === item.to}
+              onNavigate={onNavigate}
+            />
+          ));
+        }
+
+        const expanded = openGroup === group.title;
+        const GroupIcon = GROUP_ICONS[group.title] ?? LayoutDashboard;
+        return (
+          <div key={group.title}>
+            <button
+              type="button"
+              aria-expanded={expanded}
+              onClick={() => setOpenGroup(expanded ? null : group.title)}
+              className="text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors"
+            >
+              <GroupIcon className="size-4 shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">{group.title}</span>
+              <ChevronDown
+                className={cn(
+                  "size-4 shrink-0 transition-transform",
+                  expanded ? "rotate-0" : "-rotate-90",
+                )}
+              />
+            </button>
+            {expanded && (
+              <div className="mt-1 flex flex-col gap-1">
+                {group.items.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    label={item.label}
+                    icon={item.icon}
+                    active={pathname === item.to}
+                    onNavigate={onNavigate}
+                    nested
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </nav>
   );
 }
 
 
+
 function EventPicker() {
-  const { events, selectedEventId, selectEvent } = useSelectedEvent();
+  const { events, selectedEventId, selectEvent, noEventSelected } = useSelectedEvent();
   return (
     <SearchSelect
-      options={events.map((e) => ({
-        value: e.id,
-        label: `${e.name} — ${formatDate(e.date)}`,
-      }))}
-      value={selectedEventId}
+      options={[
+        { value: NO_EVENT, label: "Sem evento" },
+        ...events.map((e) => ({
+          value: e.id,
+          label: `${e.name} — ${formatDate(e.date)}`,
+        })),
+      ]}
+      value={noEventSelected ? NO_EVENT : selectedEventId}
       onChange={selectEvent}
       placeholder="Selecionar evento…"
       emptyText="Nenhum evento cadastrado."
@@ -147,8 +224,6 @@ function Brand() {
       </p>
       <p className="text-sidebar-foreground/60 mt-1.5 text-[11px] leading-snug tracking-[0.1em] uppercase">
         Registros de Presenças
-        <br />
-        Reuniões e Treinamentos
       </p>
     </div>
   );

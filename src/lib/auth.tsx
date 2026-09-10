@@ -22,6 +22,8 @@ type AuthValue = {
   displayName: string;
   email: string;
   active: boolean;
+  sectorId: string | null;
+  allPrayerHouses: boolean;
   isAdmin: boolean;
   roleLoading: boolean;
   roleError: boolean;
@@ -76,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const [profile, roles] = await Promise.all([
         supabase
           .from("profiles")
-          .select("display_name, email, active")
+          .select("display_name, email, active, sector_id, all_prayer_houses")
           .eq("id", currentUserId)
           .maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", currentUserId),
@@ -94,6 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         displayName: profile.data?.display_name ?? "",
         email: profile.data?.email ?? "",
         active: profile.data?.active ?? true,
+        sectorId: profile.data?.sector_id ?? null,
+        allPrayerHouses: profile.data?.all_prayer_houses ?? false,
         role,
       };
     },
@@ -106,6 +110,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     displayName: meQuery.data?.displayName ?? "",
     email: meQuery.data?.email ?? "",
     active: meQuery.data?.active ?? true,
+    sectorId: meQuery.data?.sectorId ?? null,
+    allPrayerHouses: meQuery.data?.allPrayerHouses ?? false,
     isAdmin: meQuery.data?.role === "admin",
     roleLoading: !!userId && meQuery.isPending,
     roleError: !!userId && meQuery.isError,
