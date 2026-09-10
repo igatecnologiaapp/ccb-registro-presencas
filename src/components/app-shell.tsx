@@ -13,12 +13,13 @@ import {
   Users,
   Church,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useAuth, useSignOut, roleLabel } from "@/lib/auth";
 import { LogOut, ShieldCheck, UserCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useSelectedEvent } from "@/components/event-context";
+import { NO_EVENT, useSelectedEvent } from "@/components/event-context";
 import { SearchSelect } from "@/components/search-select";
 import { eventTypeLabel } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/report";
@@ -190,14 +191,17 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 
 function EventPicker() {
-  const { events, selectedEventId, selectEvent } = useSelectedEvent();
+  const { events, selectedEventId, selectEvent, noEventSelected } = useSelectedEvent();
   return (
     <SearchSelect
-      options={events.map((e) => ({
-        value: e.id,
-        label: `${e.name} — ${formatDate(e.date)}`,
-      }))}
-      value={selectedEventId}
+      options={[
+        { value: NO_EVENT, label: "Sem evento" },
+        ...events.map((e) => ({
+          value: e.id,
+          label: `${e.name} — ${formatDate(e.date)}`,
+        })),
+      ]}
+      value={noEventSelected ? NO_EVENT : selectedEventId}
       onChange={selectEvent}
       placeholder="Selecionar evento…"
       emptyText="Nenhum evento cadastrado."
@@ -220,8 +224,6 @@ function Brand() {
       </p>
       <p className="text-sidebar-foreground/60 mt-1.5 text-[11px] leading-snug tracking-[0.1em] uppercase">
         Registros de Presenças
-        <br />
-        Reuniões e Treinamentos
       </p>
     </div>
   );
