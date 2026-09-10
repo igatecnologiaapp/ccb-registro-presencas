@@ -19,7 +19,9 @@ import { Label } from "@/components/ui/label";
 import { EmptyBlock, ErrorBlock, LoadingBlock, Panel } from "@/components/report-blocks";
 import { SearchSelect } from "@/components/search-select";
 import { useSelectedEvent } from "@/components/event-context";
+import { useAuth } from "@/lib/auth";
 import {
+  filterAllowedHouses,
   useAttendees,
   useDeleteAttendee,
   useFunctionInstruments,
@@ -73,7 +75,22 @@ function AttendanceRoute() {
   const [pendingDuplicate, setPendingDuplicate] = useState(false);
 
   const activeFunctions = (functions.data ?? []).filter((f) => f.active);
-  const activeHouses = (houses.data ?? []).filter((h) => h.active);
+
+  // Colaborador vê apenas as casas do seu setor (regra também aplicada no banco).
+  const { isAdmin, sectorId, allPrayerHouses } = useAuth();
+  const activeHouses = useMemo(() => {
+    const allowed = filterAllowedHouses(
+      (houses.data ?? []).filter((h) => h.active),
+      { isAdmin, sectorId, allPrayerHouses },
+    );
+    // Em Ensaio Musical, a casa do local do ensaio aparece em primeiro lugar.
+    if (selectedEvent?.event_type !== "ensaio_musical") return allowed;
+    const local = (selectedEvent.location ?? "").trim().toLowerCase();
+    if (!local) return allowed;
+    const match = allowed.find((h) => h.name.trim().toLowerCase() === local);
+    if (!match) return allowed;
+    return [match, ...allowed.filter((h) => h.id !== match.id)];
+  }, [houses.data, isAdmin, sectorId, allPrayerHouses, selectedEvent]);
 
   const allowedInstruments = useMemo(() => {
     if (!functionId) return [];
@@ -224,7 +241,13 @@ function AttendanceRoute() {
             <Label htmlFor="attendee-house">Casa de Oração</Label>
             <SearchSelect
               id="attendee-house"
-              options={activeHouses.map((h) => ({ value: h.id, label: h.name }))}
+              options={activeHouses.map((h, index) => ({
+                value: h.id,
+                label:
+                  index === 0 && selectedEvent?.event_type === "ensaio_musical"
+                    ? `${h.name} (local do ensaio)`
+                    : h.name,
+              }))}
               value={houseId}
               onChange={setHouseId}
               placeholder="Selecionar casa de oração…"
