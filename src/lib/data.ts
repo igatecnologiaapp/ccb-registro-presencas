@@ -471,3 +471,51 @@ export function useSetUserActive() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
   });
 }
+
+export function useSetUserAccess() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      userId: string;
+      sector_id?: string | null;
+      all_prayer_houses?: boolean;
+    }) => {
+      const payload: Record<string, unknown> = {};
+      if ("sector_id" in input) payload.sector_id = input.sector_id ?? null;
+      if ("all_prayer_houses" in input) payload.all_prayer_houses = input.all_prayer_houses;
+      const { error } = await supabase.from("profiles").update(payload).eq("id", input.userId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
+  });
+}
+
+export function useCreateAppUser() {
+  const qc = useQueryClient();
+  const create = useServerFn(createAppUser);
+  return useMutation({
+    mutationFn: async (input: {
+      email: string;
+      password: string;
+      displayName: string;
+      role: "admin" | "operator";
+      sectorId: string | null;
+      allPrayerHouses: boolean;
+    }) => create({ data: input }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
+  });
+}
+
+/**
+ * Casas de Oração que o usuário atual pode utilizar no registro de presenças.
+ * Administrador e Colaborador liberado veem todas; os demais veem apenas as
+ * casas do próprio setor. A regra também é aplicada no banco de dados (RLS).
+ */
+export function filterAllowedHouses(
+  houses: PrayerHouseRow[],
+  access: { isAdmin: boolean; allPrayerHouses: boolean; sectorId: string | null },
+): PrayerHouseRow[] {
+  if (access.isAdmin || access.allPrayerHouses) return houses;
+  if (!access.sectorId) return [];
+  return houses.filter((h) => h.sector_id === access.sectorId);
+}
