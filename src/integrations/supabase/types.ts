@@ -240,29 +240,43 @@ export type Database = {
       profiles: {
         Row: {
           active: boolean
+          all_prayer_houses: boolean
           created_at: string
           display_name: string
           email: string
           id: string
+          sector_id: string | null
           updated_at: string
         }
         Insert: {
           active?: boolean
+          all_prayer_houses?: boolean
           created_at?: string
           display_name?: string
           email?: string
           id: string
+          sector_id?: string | null
           updated_at?: string
         }
         Update: {
           active?: boolean
+          all_prayer_houses?: boolean
           created_at?: string
           display_name?: string
           email?: string
           id?: string
+          sector_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "sectors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sectors: {
         Row: {
