@@ -6,6 +6,8 @@ export const EVENT_TYPES = [
   { value: "reuniao_musical", label: "Reunião Musical" },
   { value: "reuniao_ministerial", label: "Reunião Ministerial" },
   { value: "reuniao_colaboradores", label: "Reunião de Colaboradores" },
+  { value: "ensaio_musical", label: "Ensaio Musical" },
+  { value: "gem", label: "GEM" },
 ] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number]["value"];
