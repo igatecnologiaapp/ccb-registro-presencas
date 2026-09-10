@@ -411,6 +411,8 @@ export type AppUserRow = {
   email: string;
   active: boolean;
   created_at: string;
+  sector_id: string | null;
+  all_prayer_houses: boolean;
   role: "admin" | "operator" | null;
 };
 
