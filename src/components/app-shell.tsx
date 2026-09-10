@@ -72,6 +72,46 @@ const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   },
 ];
 
+const GROUP_ICONS: Record<string, typeof LayoutDashboard> = {
+  Registros: ClipboardList,
+  Eventos: CalendarDays,
+  Cadastros: Church,
+  Administração: UserCog,
+};
+
+function NavLink({
+  to,
+  label,
+  icon: Icon,
+  active,
+  onNavigate,
+  nested,
+}: {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  active: boolean;
+  onNavigate?: () => void;
+  nested?: boolean;
+}) {
+  return (
+    <Link
+      to={to}
+      onClick={onNavigate}
+      className={cn(
+        "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+        nested && "ml-3",
+        active
+          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+          : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+      )}
+    >
+      <Icon className="size-4 shrink-0" />
+      <span className="min-w-0 truncate">{label}</span>
+    </Link>
+  );
+}
+
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { isAdmin } = useAuth();
@@ -81,39 +121,72 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
     items: group.items.filter((item) => !item.adminOnly || isAdmin),
   })).filter((group) => group.items.length > 0);
 
+  const activeGroup =
+    groups.find((group) => group.items.some((item) => item.to === pathname))?.title ?? null;
+  const [openGroup, setOpenGroup] = useState<string | null>(activeGroup);
+
+  useEffect(() => {
+    if (activeGroup) setOpenGroup(activeGroup);
+  }, [activeGroup]);
+
   return (
-    <nav className="flex flex-col gap-4">
-      {groups.map((group) => (
-        <div key={group.title}>
-          <p className="text-sidebar-foreground/45 px-3 pb-1 text-[10px] font-semibold tracking-[0.14em] uppercase">
-            {group.title}
-          </p>
-          <div className="flex flex-col gap-1">
-            {group.items.map(({ to, label, icon: Icon }) => {
-              const active = pathname === to;
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  onClick={onNavigate}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
-                    active
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
-                  )}
-                >
-                  <Icon className="size-4 shrink-0" />
-                  {label}
-                </Link>
-              );
-            })}
+    <nav className="flex flex-col gap-1">
+      {groups.map((group) => {
+        // "Início" é acesso direto ao Dashboard — sem submenu.
+        if (group.title === "Início") {
+          return group.items.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              label={item.label}
+              icon={item.icon}
+              active={pathname === item.to}
+              onNavigate={onNavigate}
+            />
+          ));
+        }
+
+        const expanded = openGroup === group.title;
+        const GroupIcon = GROUP_ICONS[group.title] ?? LayoutDashboard;
+        return (
+          <div key={group.title}>
+            <button
+              type="button"
+              aria-expanded={expanded}
+              onClick={() => setOpenGroup(expanded ? null : group.title)}
+              className="text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors"
+            >
+              <GroupIcon className="size-4 shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left">{group.title}</span>
+              <ChevronDown
+                className={cn(
+                  "size-4 shrink-0 transition-transform",
+                  expanded ? "rotate-0" : "-rotate-90",
+                )}
+              />
+            </button>
+            {expanded && (
+              <div className="mt-1 flex flex-col gap-1">
+                {group.items.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    label={item.label}
+                    icon={item.icon}
+                    active={pathname === item.to}
+                    onNavigate={onNavigate}
+                    nested
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </nav>
   );
 }
+
 
 
 function EventPicker() {
