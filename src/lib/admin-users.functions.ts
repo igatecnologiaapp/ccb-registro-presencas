@@ -16,12 +16,14 @@ export const createAppUser = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => createUserSchema.parse(data))
   .handler(async ({ data, context }) => {
     // Somente Administradores podem criar usuários — verificado com a sessão do chamador.
-    const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
+    const { data: roles, error: roleError } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
     if (roleError) throw new Error(roleError.message);
-    if (!isAdmin) throw new Error("Apenas Administradores podem cadastrar usuários.");
+    if (!(roles ?? []).some((r) => r.role === "admin")) {
+      throw new Error("Apenas Administradores podem cadastrar usuários.");
+    }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
