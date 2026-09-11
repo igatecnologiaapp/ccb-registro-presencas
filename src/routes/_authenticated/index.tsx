@@ -71,7 +71,12 @@ function Dashboard() {
     }
   }, [isAdmin, roleLoading, roleError, navigate]);
 
-  const { selectedEvent, selectedEventId, isLoading: eventsLoading } = useSelectedEvent();
+  const {
+    selectedEvent,
+    selectedEventId,
+    noEventSelected,
+    isLoading: eventsLoading,
+  } = useSelectedEvent();
   const isTraining = selectedEvent?.event_type === "treinamento";
 
 
@@ -122,7 +127,9 @@ function Dashboard() {
           </p>
         ) : (
           <p className="text-muted-foreground mt-1 text-sm">
-            Cadastre um evento para iniciar os registros.
+            {noEventSelected
+              ? "Sem evento selecionado."
+              : "Cadastre um evento para iniciar os registros."}
           </p>
         )}
       </header>
@@ -148,12 +155,20 @@ function Dashboard() {
         </Panel>
       ) : !selectedEvent ? (
         <Panel title="Resumo">
-          <EmptyBlock label="Nenhum evento selecionado." />
-          <div className="mt-4 flex justify-center">
-            <Button asChild>
-              <Link to="/eventos">Criar evento</Link>
-            </Button>
-          </div>
+          <EmptyBlock
+            label={
+              noEventSelected
+                ? "Sem evento. Selecione um evento para ver os indicadores."
+                : "Nenhum evento selecionado."
+            }
+          />
+          {!noEventSelected && (
+            <div className="mt-4 flex justify-center">
+              <Button asChild>
+                <Link to="/eventos">Criar evento</Link>
+              </Button>
+            </div>
+          )}
         </Panel>
       ) : isTraining ? (
         <>
