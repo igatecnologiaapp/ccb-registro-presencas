@@ -92,8 +92,8 @@ function NavLink({
   label: string;
   icon: typeof LayoutDashboard;
   active: boolean;
-  onNavigate?: () => void;
-  nested?: boolean;
+  onNavigate?: (() => void) | undefined;
+  nested?: boolean | undefined;
 }) {
   return (
     <Link

@@ -3,12 +3,21 @@ import { Search, ShieldCheck, UserCircle2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { EmptyBlock, ErrorBlock, LoadingBlock, Panel } from "@/components/report-blocks";
 import { SearchSelect } from "@/components/search-select";
 import { useAuth, ROLE_LABELS, type AppRole } from "@/lib/auth";
-import { useAppUsers, useSetUserActive, useSetUserRole } from "@/lib/data";
+import {
+  useAppUsers,
+  useCreateAppUser,
+  useSectors,
+  useSetUserAccess,
+  useSetUserActive,
+  useSetUserRole,
+} from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/_admin/usuarios")({
   head: () => ({
@@ -40,6 +49,20 @@ function UsersRoute() {
   const { data, isLoading, isError } = useAppUsers();
   const setRole = useSetUserRole();
   const setActive = useSetUserActive();
+  const setAccess = useSetUserAccess();
+  const createUser = useCreateAppUser();
+  const sectors = useSectors();
+  const sectorOptions = (sectors.data ?? [])
+    .filter((s) => s.active)
+    .map((s) => ({ value: s.id, label: s.name }));
+  const [form, setForm] = useState({
+    displayName: "",
+    email: "",
+    password: "",
+    role: "operator" as AppRole,
+    sectorId: null as string | null,
+    allPrayerHouses: false,
+  });
   const { session } = useAuth();
   const [search, setSearch] = useState("");
 
@@ -86,6 +109,58 @@ function UsersRoute() {
     }
   };
 
+  const changeAccess = async (
+    userId: string,
+    patch: { sector_id?: string | null; all_prayer_houses?: boolean },
+  ) => {
+    try {
+      await setAccess.mutateAsync({ userId, ...patch });
+      toast.success("Acesso às Casas de Oração atualizado.");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
+  const submitNewUser = async () => {
+    if (!form.displayName.trim()) {
+      toast.error("Informe o nome do usuário.");
+      return;
+    }
+    if (!form.email.trim()) {
+      toast.error("Informe o e-mail.");
+      return;
+    }
+    if (form.password.length < 6) {
+      toast.error("A senha deve ter ao menos 6 caracteres.");
+      return;
+    }
+    if (form.role === "operator" && !form.allPrayerHouses && !form.sectorId) {
+      toast.error("Selecione um Setor ou libere todas as Casas de Oração.");
+      return;
+    }
+    try {
+      await createUser.mutateAsync({
+        displayName: form.displayName.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+        role: form.role,
+        sectorId: form.sectorId,
+        allPrayerHouses: form.allPrayerHouses,
+      });
+      toast.success("Usuário cadastrado.");
+      setForm({
+        displayName: "",
+        email: "",
+        password: "",
+        role: "operator",
+        sectorId: null,
+        allPrayerHouses: false,
+      });
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <header>
@@ -96,6 +171,89 @@ function UsersRoute() {
           não conseguem registrar nem alterar nada, mesmo fora da tela.
         </p>
       </header>
+
+      <Panel
+        title="Cadastrar novo usuário"
+        description="Defina o perfil, o Setor e o acesso às Casas de Oração."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="novo-nome">Nome</Label>
+            <Input
+              id="novo-nome"
+              value={form.displayName}
+              onChange={(e) => setForm((f) => ({ ...f, displayName: e.target.value }))}
+              placeholder="Nome completo"
+              className="h-11"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="novo-email">E-mail</Label>
+            <Input
+              id="novo-email"
+              type="email"
+              autoComplete="off"
+              value={form.email}
+              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              placeholder="usuario@exemplo.com"
+              className="h-11"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nova-senha">Senha provisória</Label>
+            <Input
+              id="nova-senha"
+              type="password"
+              autoComplete="new-password"
+              value={form.password}
+              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+              placeholder="Mínimo de 6 caracteres"
+              className="h-11"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Perfil</Label>
+            <SearchSelect
+              options={ROLE_OPTIONS}
+              value={form.role}
+              onChange={(value) => setForm((f) => ({ ...f, role: value as AppRole }))}
+              placeholder="Selecionar perfil"
+            />
+          </div>
+          {form.role === "operator" && (
+            <>
+              <div className="space-y-1.5">
+                <Label>Setor</Label>
+                <SearchSelect
+                  options={sectorOptions}
+                  value={form.sectorId}
+                  onChange={(value) => setForm((f) => ({ ...f, sectorId: value }))}
+                  placeholder="Selecionar setor…"
+                  emptyText="Nenhum setor cadastrado."
+                />
+              </div>
+              <div className="flex items-center justify-between gap-3 sm:pt-6">
+                <Label htmlFor="novo-todas">Liberar todas as Casas de Oração</Label>
+                <Switch
+                  id="novo-todas"
+                  checked={form.allPrayerHouses}
+                  onCheckedChange={(value) => setForm((f) => ({ ...f, allPrayerHouses: value }))}
+                />
+              </div>
+            </>
+          )}
+        </div>
+        <div className="mt-4 flex justify-end">
+          <Button
+            onClick={() => {
+              void submitNewUser();
+            }}
+            disabled={createUser.isPending}
+          >
+            {createUser.isPending ? "Cadastrando…" : "Cadastrar usuário"}
+          </Button>
+        </div>
+      </Panel>
 
       <Panel
         title={`${filtered.length} ${filtered.length === 1 ? "usuário" : "usuários"}`}
@@ -157,6 +315,33 @@ function UsersRoute() {
                     }}
                   />
                 </div>
+                {user.role !== "admin" && (
+                  <div className="flex w-full flex-wrap items-center gap-3 pl-8">
+                    <div className="w-48 shrink-0 max-sm:w-full">
+                      <SearchSelect
+                        options={sectorOptions}
+                        value={user.sector_id}
+                        onChange={(value) => {
+                          void changeAccess(user.id, { sector_id: value });
+                        }}
+                        placeholder="Sem setor"
+                        emptyText="Nenhum setor cadastrado."
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground text-xs">
+                        Todas as Casas de Oração
+                      </span>
+                      <Switch
+                        checked={user.all_prayer_houses}
+                        aria-label={`Todas as Casas de Oração para ${user.email}`}
+                        onCheckedChange={(value) => {
+                          void changeAccess(user.id, { all_prayer_houses: value });
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
