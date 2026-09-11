@@ -482,9 +482,11 @@ export function useSetUserAccess() {
       sector_id?: string | null;
       all_prayer_houses?: boolean;
     }) => {
-      const payload: Record<string, unknown> = {};
+      const payload: { sector_id?: string | null; all_prayer_houses?: boolean } = {};
       if ("sector_id" in input) payload.sector_id = input.sector_id ?? null;
-      if ("all_prayer_houses" in input) payload.all_prayer_houses = input.all_prayer_houses;
+      if (typeof input.all_prayer_houses === "boolean") {
+        payload.all_prayer_houses = input.all_prayer_houses;
+      }
       const { error } = await supabase.from("profiles").update(payload).eq("id", input.userId);
       if (error) throw new Error(error.message);
     },

@@ -122,11 +122,21 @@ function UsersRoute() {
   };
 
   const submitNewUser = async () => {
-    if (!form.displayName.trim()) return toast.error("Informe o nome do usuário.");
-    if (!form.email.trim()) return toast.error("Informe o e-mail.");
-    if (form.password.length < 6) return toast.error("A senha deve ter ao menos 6 caracteres.");
+    if (!form.displayName.trim()) {
+      toast.error("Informe o nome do usuário.");
+      return;
+    }
+    if (!form.email.trim()) {
+      toast.error("Informe o e-mail.");
+      return;
+    }
+    if (form.password.length < 6) {
+      toast.error("A senha deve ter ao menos 6 caracteres.");
+      return;
+    }
     if (form.role === "operator" && !form.allPrayerHouses && !form.sectorId) {
-      return toast.error("Selecione um Setor ou libere todas as Casas de Oração.");
+      toast.error("Selecione um Setor ou libere todas as Casas de Oração.");
+      return;
     }
     try {
       await createUser.mutateAsync({
