@@ -2,14 +2,19 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const createUserSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  displayName: z.string().trim().min(1),
-  role: z.enum(["admin", "operator"]),
-  sectorId: z.string().uuid().nullable(),
-  allPrayerHouses: z.boolean(),
-});
+const createUserSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(6),
+    displayName: z.string().trim().min(1),
+    role: z.enum(["admin", "operator"]),
+    sectorId: z.string().uuid().nullable(),
+    allPrayerHouses: z.boolean(),
+  })
+  .refine((data) => data.role === "admin" || data.allPrayerHouses || data.sectorId !== null, {
+    message: "Selecione um Setor ou libere todas as Casas de Oração.",
+    path: ["sectorId"],
+  });
 
 export const createAppUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -45,13 +50,19 @@ export const createAppUser = createServerFn({ method: "POST" })
       sector_id: data.role === "admin" ? null : data.sectorId,
       all_prayer_houses: data.role === "admin" ? false : data.allPrayerHouses,
     });
-    if (profile.error) throw new Error(profile.error.message);
+    if (profile.error) {
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+      throw new Error(profile.error.message);
+    }
 
     await supabaseAdmin.from("user_roles").delete().eq("user_id", userId);
     const role = await supabaseAdmin
       .from("user_roles")
       .insert({ user_id: userId, role: data.role });
-    if (role.error) throw new Error(role.error.message);
+    if (role.error) {
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+      throw new Error(role.error.message);
+    }
 
     return { id: userId };
   });
