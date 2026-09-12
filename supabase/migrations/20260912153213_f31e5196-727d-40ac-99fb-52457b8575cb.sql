@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.bootstrap_current_user(text) FROM authenticated;
