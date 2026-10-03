@@ -47,20 +47,25 @@ export type SectorRow = NamedRow & { code: string | null; display_order: number 
 export type FunctionInstrumentRow = {
   id: string;
   function_id: string;
+      phone?: string | null;
   instrument_id: string;
 };
 
 export type AttendeeRow = {
+  phone: string | null;
   id: string;
   event_id: string;
   name: string;
   prayer_house_id: string;
   function_id: string;
+      phone?: string | null;
   instrument_id: string | null;
+      phone?: string | null;
   created_at: string;
 };
 
 export type TrainingAttendeeRow = {
+  phone: string | null;
   id: string;
   event_id: string;
   prayer_house_id: string;
@@ -68,6 +73,7 @@ export type TrainingAttendeeRow = {
   cpf: string;
   birth_date: string;
   function_id: string;
+      phone?: string | null;
   created_at: string;
 };
 
@@ -327,7 +333,9 @@ export function useSaveAttendee() {
       name: string;
       prayer_house_id: string;
       function_id: string;
+      phone?: string | null;
       instrument_id: string | null;
+      phone?: string | null;
     }) => {
       const payload = {
         event_id: input.event_id,
@@ -369,6 +377,7 @@ export function useSaveTrainingAttendee() {
       cpf: string;
       birth_date: string;
       function_id: string;
+      phone?: string | null;
     }) => {
       const payload = {
         event_id: input.event_id,
