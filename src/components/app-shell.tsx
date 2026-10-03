@@ -192,7 +192,8 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 
 function EventPicker() {
-  const { events, selectedEventId, selectEvent, noEventSelected } = useSelectedEvent();
+  const { events, selectedEventId, selectEvent, noEventSelected, isLocked } = useSelectedEvent();
+  if (isLocked) return null;
   return (
     <SearchSelect
       options={[

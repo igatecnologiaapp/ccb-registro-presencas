@@ -22,6 +22,8 @@ export type Database = {
           id: string
           instrument_id: string | null
           name: string
+          participant_id: string | null
+          phone: string | null
           prayer_house_id: string
           updated_at: string
         }
@@ -32,6 +34,8 @@ export type Database = {
           id?: string
           instrument_id?: string | null
           name: string
+          participant_id?: string | null
+          phone?: string | null
           prayer_house_id: string
           updated_at?: string
         }
@@ -42,6 +46,8 @@ export type Database = {
           id?: string
           instrument_id?: string | null
           name?: string
+          participant_id?: string | null
+          phone?: string | null
           prayer_house_id?: string
           updated_at?: string
         }
@@ -68,6 +74,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "attendees_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "attendees_prayer_house_id_fkey"
             columns: ["prayer_house_id"]
             isOneToOne: false
@@ -84,6 +97,7 @@ export type Database = {
           id: string
           location: string
           name: string
+          public_token: string
           start_time: string
           status: string
           updated_at: string
@@ -95,6 +109,7 @@ export type Database = {
           id?: string
           location?: string
           name: string
+          public_token?: string
           start_time?: string
           status?: string
           updated_at?: string
@@ -106,6 +121,7 @@ export type Database = {
           id?: string
           location?: string
           name?: string
+          public_token?: string
           start_time?: string
           status?: string
           updated_at?: string
@@ -195,6 +211,39 @@ export type Database = {
           id?: string
           is_shared?: boolean
           name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      participants: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          normalized_name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          normalized_name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          normalized_name?: string
+          phone?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -403,6 +452,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      normalize_participant_name: { Args: { _value: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "operator"
