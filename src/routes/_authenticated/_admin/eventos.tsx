@@ -139,7 +139,19 @@ function EventsRoute() {
         title={`${events.length} ${events.length === 1 ? "evento" : "eventos"}`}
         description="Toque em um evento para torná-lo o evento ativo."
         actions={
-          <Button size="sm" onClick={openNew}>
+          <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Copiar link"
+                        onClick={() => {
+                          const url = `${window.location.origin}/e/${event.id}`;
+                          void navigator.clipboard.writeText(url);
+                          toast.success("Link do evento copiado!");
+                        }}
+                      >
+                        <Link2 className="size-4" />
+                      </Button>
+                      <Button size="sm" onClick={openNew}>
             <Plus className="size-4" /> Novo evento
           </Button>
         }
@@ -192,7 +204,19 @@ function EventsRoute() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        aria-label="Duplicar"
+                        aria-label="Copiar link"
+                        onClick={() => {
+                          const url = `${window.location.origin}/e/${event.id}`;
+                          void navigator.clipboard.writeText(url);
+                          toast.success("Link do evento copiado!");
+                        }}
+                      >
+                        <Link2 className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Copiar link" onClick={() => { const url = `${window.location.origin}/e/${event.id}`; void navigator.clipboard.writeText(url); toast.success("Link copiado!"); }}><Link2 className="size-4" /></Button><Button variant="ghost" size="icon" aria-label="Duplicar"
                         onClick={async () => {
                           try {
                             await duplicate.mutateAsync(event);
@@ -207,10 +231,34 @@ function EventsRoute() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        aria-label="Copiar link"
+                        onClick={() => {
+                          const url = `${window.location.origin}/e/${event.id}`;
+                          void navigator.clipboard.writeText(url);
+                          toast.success("Link do evento copiado!");
+                        }}
+                      >
+                        <Link2 className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         aria-label="Editar"
                         onClick={() => openEdit(event)}
                       >
                         <Pencil className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Copiar link"
+                        onClick={() => {
+                          const url = `${window.location.origin}/e/${event.id}`;
+                          void navigator.clipboard.writeText(url);
+                          toast.success("Link do evento copiado!");
+                        }}
+                      >
+                        <Link2 className="size-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -319,10 +367,34 @@ function EventsRoute() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Copiar link"
+                        onClick={() => {
+                          const url = `${window.location.origin}/e/${event.id}`;
+                          void navigator.clipboard.writeText(url);
+                          toast.success("Link do evento copiado!");
+                        }}
+                      >
+                        <Link2 className="size-4" />
+                      </Button>
+                      <Button variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={submit} disabled={save.isPending}>
+            <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Copiar link"
+                        onClick={() => {
+                          const url = `${window.location.origin}/e/${event.id}`;
+                          void navigator.clipboard.writeText(url);
+                          toast.success("Link do evento copiado!");
+                        }}
+                      >
+                        <Link2 className="size-4" />
+                      </Button>
+                      <Button onClick={submit} disabled={save.isPending}>
               {save.isPending ? "Salvando…" : "Salvar"}
             </Button>
           </DialogFooter>
