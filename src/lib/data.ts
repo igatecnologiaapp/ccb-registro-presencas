@@ -26,6 +26,7 @@ export type EventRow = {
   location: string;
   status: string;
   event_type: string;
+  public_token: string;
   created_at: string;
   updated_at: string;
 };
@@ -55,6 +56,7 @@ export type AttendeeRow = {
   event_id: string;
   name: string;
   phone: string | null;
+  participant_id: string | null;
   prayer_house_id: string;
   function_id: string;
   instrument_id: string | null;
@@ -66,7 +68,6 @@ export type TrainingAttendeeRow = {
   event_id: string;
   prayer_house_id: string;
   full_name: string;
-  phone: string | null;
   cpf: string;
   birth_date: string;
   function_id: string;
@@ -77,9 +78,8 @@ export type ParticipantRow = {
   id: string;
   name: string;
   phone: string | null;
-  prayer_house_id: string | null;
-  function_id: string | null;
-  instrument_id: string | null;
+  normalized_name: string;
+  active: boolean;
   created_at: string;
 };
 
@@ -152,8 +152,8 @@ export function useAttendees(eventId: string | null) {
       unwrap<AttendeeRow[]>(
         await supabase
           .from("attendees")
-          .select("id, event_id, name, phone, prayer_house_id, function_id, instrument_id, created_at")
-          .eq("event_id", eventId!)
+          .select("id, event_id, name, phone, participant_id, prayer_house_id, function_id, instrument_id, created_at")
+          .eq("event_id", eventId ?? "")
           .order("created_at", { ascending: false }),
       ),
   });
@@ -167,8 +167,8 @@ export function useTrainingAttendees(eventId: string | null) {
       unwrap<TrainingAttendeeRow[]>(
         await supabase
           .from("training_attendees")
-          .select("id, event_id, prayer_house_id, full_name, phone, cpf, birth_date, function_id, created_at")
-          .eq("event_id", eventId!)
+          .select("id, event_id, prayer_house_id, full_name, cpf, birth_date, function_id, created_at")
+          .eq("event_id", eventId ?? "")
           .order("created_at", { ascending: false }),
       ),
   });
@@ -179,7 +179,7 @@ export function useParticipants() {
     queryKey: ["participants"],
     queryFn: async () =>
       unwrap<ParticipantRow[]>(
-        await supabase.from("participants").select("*").order("name"),
+        await supabase.from("participants").select("*").eq("active", true).order("name"),
       ),
   });
 }
@@ -348,6 +348,7 @@ export function useSaveAttendee() {
       event_id: string;
       name: string;
       phone: string | null;
+      participant_id: string | null;
       prayer_house_id: string;
       function_id: string;
       instrument_id: string | null;
@@ -356,6 +357,7 @@ export function useSaveAttendee() {
         event_id: input.event_id,
         name: input.name?.trim() || "",
         phone: input.phone || null,
+        participant_id: input.participant_id,
         prayer_house_id: input.prayer_house_id,
         function_id: input.function_id,
         instrument_id: input.instrument_id,
@@ -390,7 +392,6 @@ export function useSaveTrainingAttendee() {
       event_id: string;
       prayer_house_id: string;
       full_name: string;
-      phone: string | null;
       cpf: string;
       birth_date: string;
       function_id: string;
@@ -399,7 +400,6 @@ export function useSaveTrainingAttendee() {
         event_id: input.event_id,
         prayer_house_id: input.prayer_house_id,
         full_name: input.full_name.trim(),
-        phone: input.phone || null,
         cpf: input.cpf.replace(/\D/g, ""),
         birth_date: input.birth_date,
         function_id: input.function_id,
@@ -435,37 +435,18 @@ export function useSaveParticipant() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: {
-      id?: string;
       name: string;
       phone?: string | null;
-      prayer_house_id?: string | null;
-      function_id?: string | null;
-      instrument_id?: string | null;
     }) => {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user) throw new Error("Sessão inválida.");
       const payload = {
         name: input.name.trim(),
+        normalized_name: input.name.trim(),
         phone: input.phone || null,
-        prayer_house_id: input.prayer_house_id || null,
-        function_id: input.function_id || null,
-        instrument_id: input.instrument_id || null,
+        created_by: authData.user.id,
       };
-      if (input.id) {
-        return unwrap(
-          await supabase.from("participants").update(payload).eq("id", input.id).select().single(),
-        );
-      }
       return unwrap(await supabase.from("participants").insert(payload).select().single());
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["participants"] }),
-  });
-}
-
-export function useDeleteParticipant() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("participants").delete().eq("id", id);
-      if (error) throw new Error(error.message);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["participants"] }),
   });
