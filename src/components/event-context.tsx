@@ -3,8 +3,8 @@ import { useEvents, type EventRow } from "@/lib/data";
 
 const STORAGE_KEY = "rtm.selectedEventId";
 
-/** Estado válido \"Sem evento\": nenhum evento selecionado, sem seleção automática. */
-export const NO_EVENT = \"__none__\";
+/** Estado válido "Sem evento": nenhum evento selecionado, sem seleção automática. */
+export const NO_EVENT = "__none__";
 
 type EventContextValue = {
   events: EventRow[];
@@ -29,12 +29,12 @@ export function SelectedEventProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const eventParam = params.get(\"event\");
-    const lockParam = params.get(\"lock\");
+    const eventParam = params.get("event");
+    const lockParam = params.get("lock");
     
     if (eventParam) {
       setSelectedId(eventParam);
-      if (lockParam === \"1\") {
+      if (lockParam === "1") {
         setIsLocked(true);
       }
     } else {
@@ -80,6 +80,6 @@ export function SelectedEventProvider({ children }: { children: ReactNode }) {
 
 export function useSelectedEvent(): EventContextValue {
   const ctx = useContext(EventContext);
-  if (!ctx) throw new Error(\"useSelectedEvent must be used inside SelectedEventProvider\");
+  if (!ctx) throw new Error("useSelectedEvent must be used inside SelectedEventProvider");
   return ctx;
 }
