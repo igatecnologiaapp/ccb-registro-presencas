@@ -156,6 +156,8 @@ function TrainingRoute() {
     );
   }
 
+  const eventOpen = selectedEvent.status === "aberto";
+
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <header>
@@ -164,6 +166,11 @@ function TrainingRoute() {
           Evento ativo: <span className="text-foreground font-medium">{selectedEvent.name}</span> ·{" "}
           {formatDate(selectedEvent.date)}
         </p>
+        {!eventOpen && (
+          <p className="text-destructive mt-2 text-sm font-medium">
+            Este evento não está disponível para novos registros.
+          </p>
+        )}
       </header>
 
       <Panel
@@ -225,7 +232,7 @@ function TrainingRoute() {
           </div>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
-          <Button onClick={submit} disabled={save.isPending} className="min-w-40">
+          <Button onClick={submit} disabled={save.isPending || !eventOpen} className="min-w-40">
             <UserPlus className="size-4" />
             {save.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Registrar inscrição"}
           </Button>

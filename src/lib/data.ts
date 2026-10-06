@@ -546,11 +546,14 @@ export function useCreateAppUser() {
   const create = useServerFn(createAppUser);
   return useMutation({
     mutationFn: async (input: {
-      display_name: string;
+      displayName: string;
       email: string;
+      password: string;
       role: "admin" | "operator";
+      sectorId: string | null;
+      allPrayerHouses: boolean;
     }) => {
-      return await create(input);
+      return await create({ data: input });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
   });

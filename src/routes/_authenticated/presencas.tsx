@@ -228,6 +228,7 @@ function AttendanceRoute() {
         name: newParticipant.name,
         phone: phoneDigits(newParticipant.phone) || null,
       });
+      if (!saved) throw new Error("Não foi possível cadastrar o participante.");
       setParticipantId(saved.id);
       setName(saved.name);
       setPhone(formatPhone(saved.phone));
