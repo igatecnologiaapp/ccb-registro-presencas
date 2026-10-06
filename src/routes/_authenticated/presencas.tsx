@@ -14,8 +14,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ParticipantPicker } from "@/components/participant-picker";
 import { EmptyBlock, ErrorBlock, LoadingBlock, Panel } from "@/components/report-blocks";
 import { SearchSelect } from "@/components/search-select";
 import { useSelectedEvent } from "@/components/event-context";
@@ -27,11 +36,14 @@ import {
   useFunctionInstruments,
   useFunctions,
   useInstruments,
+  useParticipants,
   usePrayerHouses,
   useSaveAttendee,
+  useSaveParticipant,
   type AttendeeRow,
 } from "@/lib/data";
 import { nameMap } from "@/lib/report";
+import { formatPhone, normalizePersonName, phoneDigits } from "@/lib/phone";
 
 export const Route = createFileRoute("/_authenticated/presencas")({
   head: () => ({
@@ -61,9 +73,13 @@ function AttendanceRoute() {
   const attendees = useAttendees(selectedEventId);
   const save = useSaveAttendee();
   const remove = useDeleteAttendee();
+  const participants = useParticipants();
+  const saveParticipant = useSaveParticipant();
 
   const nameRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [participantId, setParticipantId] = useState<string | null>(null);
   const [houseId, setHouseId] = useState<string | null>(null);
   const [functionId, setFunctionId] = useState<string | null>(null);
   const [instrumentId, setInstrumentId] = useState<string | null>(null);
@@ -73,6 +89,9 @@ function AttendanceRoute() {
   const [filterHouse, setFilterHouse] = useState<string | null>(null);
   const [filterFunction, setFilterFunction] = useState<string | null>(null);
   const [pendingDuplicate, setPendingDuplicate] = useState(false);
+  const [newParticipantOpen, setNewParticipantOpen] = useState(false);
+  const [newParticipant, setNewParticipant] = useState({ name: "", phone: "" });
+  const [sameNameConfirmed, setSameNameConfirmed] = useState(false);
 
   const activeFunctions = (functions.data ?? []).filter((f) => f.active);
 
@@ -115,6 +134,7 @@ function AttendanceRoute() {
     return list.filter(
       (a) =>
         a.name.toLowerCase().includes(term) ||
+        (a.phone ?? "").includes(term.replace(/\D/g, "")) ||
         (houseNames.get(a.prayer_house_id) ?? "").toLowerCase().includes(term) ||
         (functionNames.get(a.function_id) ?? "").toLowerCase().includes(term),
     );
@@ -122,6 +142,8 @@ function AttendanceRoute() {
 
   const resetForm = (keepContext: boolean) => {
     setName("");
+    setPhone("");
+    setParticipantId(null);
     setEditing(null);
     if (!keepContext) {
       setHouseId(null);
@@ -136,8 +158,12 @@ function AttendanceRoute() {
       toast.error("Selecione um evento antes de registrar presenças.");
       return;
     }
-    if (!name.trim() || !houseId || !functionId) {
-      toast.error("Informe nome, casa de oração e função.");
+    if (!houseId || !functionId) {
+      toast.error("Informe casa de oração e função.");
+      return;
+    }
+    if (phone && ![10, 11].includes(phoneDigits(phone).length)) {
+      toast.error("Informe um Fone/WhatsApp válido com DDD.");
       return;
     }
     if (instrumentRequired && !instrumentId) {
@@ -145,7 +171,7 @@ function AttendanceRoute() {
       return;
     }
 
-    const duplicate = (attendees.data ?? []).find(
+    const duplicate = name.trim() && (attendees.data ?? []).find(
       (a) =>
         a.id !== editing?.id &&
         a.prayer_house_id === houseId &&
@@ -166,12 +192,48 @@ function AttendanceRoute() {
         ...(editing ? { id: editing.id } : {}),
         event_id: selectedEventId,
         name,
+        phone: phoneDigits(phone) || null,
+        participant_id: participantId,
         prayer_house_id: houseId,
         function_id: functionId,
         instrument_id: instrumentRequired ? instrumentId : null,
       });
       toast.success(editing ? "Presença atualizada." : "Presença registrada.");
       resetForm(true);
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
+  const createParticipant = async () => {
+    const normalized = normalizePersonName(newParticipant.name);
+    if (!normalized) {
+      toast.error("Informe o nome do participante.");
+      return;
+    }
+    if (newParticipant.phone && ![10, 11].includes(phoneDigits(newParticipant.phone).length)) {
+      toast.error("Informe um Fone/WhatsApp válido com DDD.");
+      return;
+    }
+    const homonyms = (participants.data ?? []).filter(
+      (participant) => participant.normalized_name === normalized,
+    );
+    if (homonyms.length > 0 && !sameNameConfirmed) {
+      toast.error("Já existe participante com este nome. Confirme para cadastrar um homônimo.");
+      setSameNameConfirmed(true);
+      return;
+    }
+    try {
+      const saved = await saveParticipant.mutateAsync({
+        name: newParticipant.name,
+        phone: phoneDigits(newParticipant.phone) || null,
+      });
+      setParticipantId(saved.id);
+      setName(saved.name);
+      setPhone(formatPhone(saved.phone));
+      setNewParticipantOpen(false);
+      setSameNameConfirmed(false);
+      toast.success("Participante cadastrado e selecionado.");
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -207,6 +269,8 @@ function AttendanceRoute() {
     );
   }
 
+  const eventOpen = selectedEvent.status === "aberto";
+
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <header>
@@ -215,6 +279,11 @@ function AttendanceRoute() {
           Evento ativo: <span className="text-foreground font-medium">{selectedEvent.name}</span>. O
           nome permanece em foco para lançamentos em sequência.
         </p>
+        {!eventOpen && (
+          <p className="text-destructive mt-2 text-sm font-medium">
+            Este evento não está disponível para novos registros.
+          </p>
+        )}
       </header>
 
       <Panel
@@ -222,19 +291,37 @@ function AttendanceRoute() {
         description="Casa de oração, função e instrumento permanecem selecionados após salvar."
       >
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="attendee-name">Nome do participante</Label>
-            <Input
-              id="attendee-name"
-              ref={nameRef}
-              className="h-11"
-              autoFocus
-              value={name}
-              placeholder="Nome completo"
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") submit();
+          <div className="space-y-2 sm:col-span-2" ref={nameRef}>
+            <Label>Nome do participante <span className="text-muted-foreground text-xs">(opcional)</span></Label>
+            <ParticipantPicker
+              participants={participants.data ?? []}
+              value={participantId}
+              typedName={name}
+              onNameChange={(nextName) => {
+                setName(nextName);
+                setParticipantId(null);
               }}
+              onSelect={(participant) => {
+                setParticipantId(participant.id);
+                setName(participant.name);
+                setPhone(formatPhone(participant.phone));
+              }}
+              onNew={() => {
+                setNewParticipant({ name, phone });
+                setSameNameConfirmed(false);
+                setNewParticipantOpen(true);
+              }}
+            />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="attendee-phone">Fone/WhatsApp <span className="text-muted-foreground text-xs">(opcional)</span></Label>
+            <Input
+              id="attendee-phone"
+              className="h-11"
+              inputMode="tel"
+              placeholder="(11) 99999-9999"
+              value={formatPhone(phone)}
+              onChange={(event) => setPhone(phoneDigits(event.target.value))}
             />
           </div>
           <div className="space-y-2">
@@ -287,7 +374,7 @@ function AttendanceRoute() {
           )}
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
-          <Button onClick={submit} disabled={save.isPending} className="min-w-40">
+          <Button onClick={submit} disabled={save.isPending || !eventOpen} className="min-w-40">
             <UserPlus className="size-4" />
             {save.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Registrar presença"}
           </Button>
@@ -305,7 +392,7 @@ function AttendanceRoute() {
           <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input
             className="h-11 pl-9"
-            placeholder="Pesquisar por nome, casa de oração ou função…"
+            placeholder="Pesquisar por nome, telefone, casa de oração ou função…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -351,16 +438,19 @@ function AttendanceRoute() {
                   onClick={() => {
                     setEditing(row);
                     setName(row.name);
+                    setPhone(formatPhone(row.phone));
+                    setParticipantId(row.participant_id);
                     setHouseId(row.prayer_house_id);
                     setFunctionId(row.function_id);
                     setInstrumentId(row.instrument_id);
                     nameRef.current?.focus();
                   }}
                 >
-                  <span className="block truncate text-sm font-medium">{row.name}</span>
+                  <span className="block truncate text-sm font-medium">{row.name || "Participante sem nome"}</span>
                   <span className="text-muted-foreground block truncate text-xs">
                     {houseNames.get(row.prayer_house_id) ?? "—"} ·{" "}
                     {functionNames.get(row.function_id) ?? "—"}
+                    {row.phone ? ` · ${formatPhone(row.phone)}` : ""}
                   </span>
                 </button>
                 {row.instrument_id && (
@@ -408,7 +498,7 @@ function AttendanceRoute() {
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir {toDelete?.name}?</AlertDialogTitle>
+            <AlertDialogTitle>Excluir {toDelete?.name || "esta presença"}?</AlertDialogTitle>
             <AlertDialogDescription>
               O registro de presença será removido deste evento.
             </AlertDialogDescription>
@@ -432,6 +522,53 @@ function AttendanceRoute() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={newParticipantOpen} onOpenChange={setNewParticipantOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Novo participante</DialogTitle>
+            <DialogDescription>
+              O cadastro reutiliza somente nome e contato. Casa, função e instrumento continuam sendo escolhidos em cada evento.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-participant-name">Nome</Label>
+              <Input
+                id="new-participant-name"
+                value={newParticipant.name}
+                onChange={(event) => {
+                  setNewParticipant({ ...newParticipant, name: event.target.value });
+                  setSameNameConfirmed(false);
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-participant-phone">Fone/WhatsApp (opcional)</Label>
+              <Input
+                id="new-participant-phone"
+                inputMode="tel"
+                placeholder="(11) 99999-9999"
+                value={formatPhone(newParticipant.phone)}
+                onChange={(event) =>
+                  setNewParticipant({ ...newParticipant, phone: phoneDigits(event.target.value) })
+                }
+              />
+            </div>
+            {sameNameConfirmed && (
+              <p className="text-destructive text-sm">
+                Há outro participante com o mesmo nome. Clique novamente em Salvar para confirmar o homônimo.
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNewParticipantOpen(false)}>Cancelar</Button>
+            <Button onClick={createParticipant} disabled={saveParticipant.isPending}>
+              {saveParticipant.isPending ? "Salvando…" : sameNameConfirmed ? "Confirmar homônimo" : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
