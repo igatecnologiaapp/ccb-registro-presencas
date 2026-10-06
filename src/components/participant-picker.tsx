@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +9,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import type { ParticipantRow } from "@/lib/data";
 import { formatPhone, normalizePersonName } from "@/lib/phone";
 import { cn } from "@/lib/utils";
@@ -18,17 +19,18 @@ export function ParticipantPicker({
   participants,
   value,
   typedName,
+  onNameChange,
   onSelect,
   onNew,
 }: {
   participants: ParticipantRow[];
   value: string | null;
   typedName: string;
+  onNameChange: (name: string) => void;
   onSelect: (participant: ParticipantRow) => void;
   onNew: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const selected = participants.find((participant) => participant.id === value) ?? null;
   const matches = useMemo(() => {
     const normalized = normalizePersonName(typedName);
     if (!normalized) return participants;
@@ -37,22 +39,22 @@ export function ParticipantPicker({
 
   return (
     <div className="flex min-w-0 gap-2">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="h-11 min-w-0 flex-1 justify-between font-normal"
-          >
-            <span className="truncate">{selected?.name || typedName || "Pesquisar participante…"}</span>
-            <ChevronsUpDown className="text-muted-foreground size-4 shrink-0" />
-          </Button>
-        </PopoverTrigger>
+      <Popover open={open && typedName.trim().length > 0} onOpenChange={setOpen}>
+        <PopoverAnchor asChild>
+          <Input
+            className="h-11 min-w-0 flex-1"
+            value={typedName}
+            placeholder="Nome completo (opcional)"
+            autoComplete="off"
+            onFocus={() => setOpen(true)}
+            onChange={(event) => {
+              onNameChange(event.target.value);
+              setOpen(true);
+            }}
+          />
+        </PopoverAnchor>
         <PopoverContent className="w-[min(26rem,calc(100vw-2rem))] p-0" align="start">
           <Command shouldFilter={false}>
-            <CommandInput placeholder="Digite o nome…" />
             <CommandList>
               <CommandEmpty>Nenhum participante encontrado.</CommandEmpty>
               <CommandGroup>
