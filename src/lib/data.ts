@@ -446,7 +446,9 @@ export function useSaveParticipant() {
         phone: input.phone || null,
         created_by: authData.user.id,
       };
-      return unwrap(await supabase.from("participants").insert(payload).select().single());
+      return unwrap<ParticipantRow>(
+        await supabase.from("participants").insert(payload).select().single(),
+      );
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["participants"] }),
   });
