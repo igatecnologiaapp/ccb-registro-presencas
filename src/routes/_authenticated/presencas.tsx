@@ -76,7 +76,7 @@ function AttendanceRoute() {
   const participants = useParticipants();
   const saveParticipant = useSaveParticipant();
 
-  const nameRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLDivElement>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [participantId, setParticipantId] = useState<string | null>(null);
