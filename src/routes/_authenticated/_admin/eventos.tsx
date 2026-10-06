@@ -231,6 +231,27 @@ function EventsRoute() {
                       </Button>
                     </div>
                   </div>
+                  <div className="bg-muted/40 mt-3 flex min-w-0 flex-col gap-2 rounded-md border px-3 py-2 sm:flex-row sm:items-center">
+                    <span className="text-muted-foreground shrink-0 text-xs font-medium">
+                      Acesso ao evento
+                    </span>
+                    <code className="min-w-0 flex-1 truncate text-xs">
+                      {`${window.location.origin}/e/${event.public_token}`}
+                    </code>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(
+                          `${window.location.origin}/e/${event.public_token}`,
+                        );
+                        toast.success("Link copiado.");
+                      }}
+                    >
+                      <Link2 className="size-4" /> Copiar
+                    </Button>
+                  </div>
                 </li>
               );
             })}

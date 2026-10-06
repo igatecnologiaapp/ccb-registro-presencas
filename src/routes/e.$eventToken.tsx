@@ -3,6 +3,22 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/e/$eventToken")({
   ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Acesso ao evento — Registros de Presenças CCB" },
+      {
+        name: "description",
+        content: "Acesso autenticado ao formulário de registro de um evento específico.",
+      },
+      { property: "og:title", content: "Acesso ao evento — Registros de Presenças CCB" },
+      {
+        property: "og:description",
+        content: "Acesso autenticado ao registro de presenças do evento.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   beforeLoad: async ({ params }) => {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
