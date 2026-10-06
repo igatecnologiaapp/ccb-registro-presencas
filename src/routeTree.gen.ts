@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
 import { Route as AuthenticatedPresencasRouteImport } from './routes/_authenticated/presencas'
+import { Route as EEventTokenRouteImport } from './routes/e.$eventToken'
 import { Route as AuthenticatedAdminCasasRouteImport } from './routes/_authenticated/_admin/casas'
 import { Route as AuthenticatedAdminEventosRouteImport } from './routes/_authenticated/_admin/eventos'
 import { Route as AuthenticatedAdminFuncoesRouteImport } from './routes/_authenticated/_admin/funcoes'
@@ -46,6 +47,11 @@ const AuthenticatedPresencasRoute = AuthenticatedPresencasRouteImport.update({
   id: '/presencas',
   path: '/presencas',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const EEventTokenRoute = EEventTokenRouteImport.update({
+  id: '/e/$eventToken',
+  path: '/e/$eventToken',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminCasasRoute = AuthenticatedAdminCasasRouteImport.update({
   id: '/casas',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/presencas': typeof AuthenticatedPresencasRoute
+  '/e/$eventToken': typeof EEventTokenRoute
   '/casas': typeof AuthenticatedAdminCasasRoute
   '/eventos': typeof AuthenticatedAdminEventosRoute
   '/funcoes': typeof AuthenticatedAdminFuncoesRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/': typeof AuthenticatedIndexRoute
   '/presencas': typeof AuthenticatedPresencasRoute
+  '/e/$eventToken': typeof EEventTokenRoute
   '/casas': typeof AuthenticatedAdminCasasRoute
   '/eventos': typeof AuthenticatedAdminEventosRoute
   '/funcoes': typeof AuthenticatedAdminFuncoesRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/presencas': typeof AuthenticatedPresencasRoute
+  '/e/$eventToken': typeof EEventTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/_admin/casas': typeof AuthenticatedAdminCasasRoute
   '/_authenticated/_admin/eventos': typeof AuthenticatedAdminEventosRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/presencas'
+    | '/e/$eventToken'
     | '/casas'
     | '/eventos'
     | '/funcoes'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/'
     | '/presencas'
+    | '/e/$eventToken'
     | '/casas'
     | '/eventos'
     | '/funcoes'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/_admin'
     | '/_authenticated/presencas'
+    | '/e/$eventToken'
     | '/_authenticated/'
     | '/_authenticated/_admin/casas'
     | '/_authenticated/_admin/eventos'
@@ -196,6 +208,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  EEventTokenRoute: typeof EEventTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -234,6 +247,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/presencas'
       preLoaderRoute: typeof AuthenticatedPresencasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/e/$eventToken': {
+      id: '/e/$eventToken'
+      path: '/e/$eventToken'
+      fullPath: '/e/$eventToken'
+      preLoaderRoute: typeof EEventTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_admin/casas': {
       id: '/_authenticated/_admin/casas'
@@ -349,6 +369,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  EEventTokenRoute: EEventTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

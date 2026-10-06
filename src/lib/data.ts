@@ -446,7 +446,9 @@ export function useSaveParticipant() {
         phone: input.phone || null,
         created_by: authData.user.id,
       };
-      return unwrap(await supabase.from("participants").insert(payload).select().single());
+      return unwrap<ParticipantRow>(
+        await supabase.from("participants").insert(payload).select().single(),
+      );
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["participants"] }),
   });
@@ -546,11 +548,14 @@ export function useCreateAppUser() {
   const create = useServerFn(createAppUser);
   return useMutation({
     mutationFn: async (input: {
-      display_name: string;
+      displayName: string;
       email: string;
+      password: string;
       role: "admin" | "operator";
+      sectorId: string | null;
+      allPrayerHouses: boolean;
     }) => {
-      return await create(input);
+      return await create({ data: input });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["app_users"] }),
   });

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Copy, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
+import { Copy, Link2, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -139,19 +139,7 @@ function EventsRoute() {
         title={`${events.length} ${events.length === 1 ? "evento" : "eventos"}`}
         description="Toque em um evento para torná-lo o evento ativo."
         actions={
-          <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Copiar link"
-                        onClick={() => {
-                          const url = `${window.location.origin}/e/${event.id}`;
-                          void navigator.clipboard.writeText(url);
-                          toast.success("Link do evento copiado!");
-                        }}
-                      >
-                        <Link2 className="size-4" />
-                      </Button>
-                      <Button size="sm" onClick={openNew}>
+          <Button size="sm" onClick={openNew}>
             <Plus className="size-4" /> Novo evento
           </Button>
         }
@@ -205,18 +193,15 @@ function EventsRoute() {
                         variant="ghost"
                         size="icon"
                         aria-label="Copiar link"
-                        onClick={() => {
-                          const url = `${window.location.origin}/e/${event.id}`;
-                          void navigator.clipboard.writeText(url);
-                          toast.success("Link do evento copiado!");
+                        onClick={async () => {
+                          const url = `${window.location.origin}/e/${event.public_token}`;
+                          await navigator.clipboard.writeText(url);
+                          toast.success("Link copiado.");
                         }}
                       >
                         <Link2 className="size-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Copiar link" onClick={() => { const url = `${window.location.origin}/e/${event.id}`; void navigator.clipboard.writeText(url); toast.success("Link copiado!"); }}><Link2 className="size-4" /></Button><Button variant="ghost" size="icon" aria-label="Duplicar"
+                      <Button variant="ghost" size="icon" aria-label="Duplicar"
                         onClick={async () => {
                           try {
                             await duplicate.mutateAsync(event);
@@ -231,34 +216,10 @@ function EventsRoute() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        aria-label="Copiar link"
-                        onClick={() => {
-                          const url = `${window.location.origin}/e/${event.id}`;
-                          void navigator.clipboard.writeText(url);
-                          toast.success("Link do evento copiado!");
-                        }}
-                      >
-                        <Link2 className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
                         aria-label="Editar"
                         onClick={() => openEdit(event)}
                       >
                         <Pencil className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Copiar link"
-                        onClick={() => {
-                          const url = `${window.location.origin}/e/${event.id}`;
-                          void navigator.clipboard.writeText(url);
-                          toast.success("Link do evento copiado!");
-                        }}
-                      >
-                        <Link2 className="size-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -269,6 +230,27 @@ function EventsRoute() {
                         <Trash2 className="text-destructive size-4" />
                       </Button>
                     </div>
+                  </div>
+                  <div className="bg-muted/40 mt-3 flex min-w-0 flex-col gap-2 rounded-md border px-3 py-2 sm:flex-row sm:items-center">
+                    <span className="text-muted-foreground shrink-0 text-xs font-medium">
+                      Acesso ao evento
+                    </span>
+                    <code className="min-w-0 flex-1 truncate text-xs">
+                      {`${window.location.origin}/e/${event.public_token}`}
+                    </code>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(
+                          `${window.location.origin}/e/${event.public_token}`,
+                        );
+                        toast.success("Link copiado.");
+                      }}
+                    >
+                      <Link2 className="size-4" /> Copiar
+                    </Button>
                   </div>
                 </li>
               );
@@ -367,34 +349,10 @@ function EventsRoute() {
             </div>
           </div>
           <DialogFooter>
-            <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Copiar link"
-                        onClick={() => {
-                          const url = `${window.location.origin}/e/${event.id}`;
-                          void navigator.clipboard.writeText(url);
-                          toast.success("Link do evento copiado!");
-                        }}
-                      >
-                        <Link2 className="size-4" />
-                      </Button>
-                      <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Copiar link"
-                        onClick={() => {
-                          const url = `${window.location.origin}/e/${event.id}`;
-                          void navigator.clipboard.writeText(url);
-                          toast.success("Link do evento copiado!");
-                        }}
-                      >
-                        <Link2 className="size-4" />
-                      </Button>
-                      <Button onClick={submit} disabled={save.isPending}>
+            <Button onClick={submit} disabled={save.isPending}>
               {save.isPending ? "Salvando…" : "Salvar"}
             </Button>
           </DialogFooter>

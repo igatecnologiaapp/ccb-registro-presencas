@@ -264,22 +264,22 @@ function UserBox() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const { selectedEvent } = useSelectedEvent();
+  const { selectedEvent, isLocked } = useSelectedEvent();
 
   return (
     <div className="flex min-h-screen">
-      <aside className="bg-sidebar hidden w-72 shrink-0 flex-col lg:flex">
+      {!isLocked && <aside className="bg-sidebar hidden w-72 shrink-0 flex-col lg:flex">
         <Brand />
         <div className="p-3">
           <NavList />
         </div>
         <UserBox />
-      </aside>
+      </aside>}
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="bg-card/95 supports-[backdrop-filter]:bg-card/80 sticky top-0 z-30 border-b backdrop-blur">
           <div className="flex items-center gap-3 px-4 py-3 lg:px-8">
-            <Sheet open={open} onOpenChange={setOpen}>
+            {!isLocked && <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="lg:hidden" aria-label="Menu">
                   <Menu className="size-5" />
@@ -292,7 +292,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </div>
                 <UserBox />
               </SheetContent>
-            </Sheet>
+            </Sheet>}
 
             <div className="min-w-0 flex-1">
               <p className="text-muted-foreground text-[11px] tracking-wider uppercase">
@@ -311,9 +311,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <EventPicker />
             </div>
           </div>
-          <div className="border-t px-4 py-2 sm:hidden">
+          {!isLocked && <div className="border-t px-4 py-2 sm:hidden">
             <EventPicker />
-          </div>
+          </div>}
         </header>
 
         <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">{children}</main>

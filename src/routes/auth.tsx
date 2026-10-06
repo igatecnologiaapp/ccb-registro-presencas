@@ -36,7 +36,15 @@ function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/", replace: true });
+    if (!loading && session) {
+      const returnTo = window.sessionStorage.getItem("rtm.returnTo");
+      window.sessionStorage.removeItem("rtm.returnTo");
+      if (returnTo?.startsWith("/e/")) {
+        window.location.assign(returnTo);
+        return;
+      }
+      void navigate({ to: "/", replace: true });
+    }
   }, [loading, session, navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -48,7 +56,10 @@ function AuthPage() {
         password,
       });
       if (error) throw error;
-      navigate({ to: "/", replace: true });
+      const returnTo = window.sessionStorage.getItem("rtm.returnTo");
+      window.sessionStorage.removeItem("rtm.returnTo");
+      if (returnTo?.startsWith("/e/")) window.location.assign(returnTo);
+      else await navigate({ to: "/", replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Falha na autenticação.";
       toast.error(
