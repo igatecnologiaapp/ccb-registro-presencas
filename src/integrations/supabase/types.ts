@@ -98,6 +98,7 @@ export type Database = {
           location: string
           name: string
           public_token: string
+          sector_id: string | null
           start_time: string
           status: string
           updated_at: string
@@ -110,6 +111,7 @@ export type Database = {
           location?: string
           name: string
           public_token?: string
+          sector_id?: string | null
           start_time?: string
           status?: string
           updated_at?: string
@@ -122,11 +124,20 @@ export type Database = {
           location?: string
           name?: string
           public_token?: string
+          sector_id?: string | null
           start_time?: string
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "events_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "sectors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       function_instruments: {
         Row: {
@@ -443,6 +454,10 @@ export type Database = {
     Functions: {
       bootstrap_current_user: {
         Args: { _display_name?: string }
+        Returns: undefined
+      }
+      check_event_sector_house: {
+        Args: { _event_id: string; _house_id: string }
         Returns: undefined
       }
       has_role: {
