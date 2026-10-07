@@ -39,6 +39,7 @@ import {
   useDeleteEvent,
   useDuplicateEvent,
   useSaveEvent,
+  useSectors,
   type EventRow,
 } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/report";
@@ -69,6 +70,7 @@ const emptyForm = {
   location: "",
   status: "aberto",
   event_type: "reuniao_musical",
+  sector_id: "",
 };
 
 function EventsRoute() {
@@ -76,6 +78,7 @@ function EventsRoute() {
   const save = useSaveEvent();
   const duplicate = useDuplicateEvent();
   const remove = useDeleteEvent();
+  const sectors = useSectors();
 
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -97,6 +100,7 @@ function EventsRoute() {
       location: event.location ?? "",
       status: event.status,
       event_type: event.event_type,
+      sector_id: event.sector_id ?? "",
     });
     setOpen(true);
   };
@@ -104,6 +108,10 @@ function EventsRoute() {
   const submit = async () => {
     if (!form.name.trim() || !form.date || !form.start_time) {
       toast.error("Informe nome, data e horário.");
+      return;
+    }
+    if (!form.sector_id) {
+      toast.error("Selecione o Setor do evento.");
       return;
     }
     try {
@@ -115,6 +123,7 @@ function EventsRoute() {
         location: form.location.trim(),
         status: form.status,
         event_type: form.event_type,
+        sector_id: form.sector_id,
       });
       toast.success(editingId ? "Evento atualizado." : "Evento criado.");
       if (!editingId && saved && typeof saved === "object" && "id" in saved) {
@@ -277,6 +286,29 @@ function EventsRoute() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="event-sector">Setor</Label>
+              <Select
+                value={form.sector_id || undefined}
+                onValueChange={(sector_id) => setForm({ ...form, sector_id })}
+              >
+                <SelectTrigger id="event-sector" className="h-11 w-full">
+                  <SelectValue placeholder="Selecione o Setor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(sectors.data ?? [])
+                    .filter((s) => s.active || s.id === form.sector_id)
+                    .map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <p className="text-muted-foreground text-xs">
+                Somente as Casas de Oração deste Setor aparecem no registro do evento.
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="event-type">Tipo de evento</Label>
