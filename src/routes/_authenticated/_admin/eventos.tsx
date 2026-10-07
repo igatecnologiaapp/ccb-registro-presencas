@@ -290,7 +290,7 @@ function EventsRoute() {
             <div className="space-y-2">
               <Label htmlFor="event-sector">Setor</Label>
               <Select
-                value={form.sector_id || undefined}
+                value={form.sector_id}
                 onValueChange={(sector_id) => setForm({ ...form, sector_id })}
               >
                 <SelectTrigger id="event-sector" className="h-11 w-full">
