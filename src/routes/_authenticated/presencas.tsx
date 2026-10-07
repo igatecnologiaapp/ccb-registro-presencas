@@ -98,8 +98,11 @@ function AttendanceRoute() {
   // Colaborador vê apenas as casas do seu setor (regra também aplicada no banco).
   const { isAdmin, sectorId, allPrayerHouses } = useAuth();
   const activeHouses = useMemo(() => {
+    const eventSector = selectedEvent?.sector_id ?? null;
     const allowed = filterAllowedHouses(
-      (houses.data ?? []).filter((h) => h.active),
+      (houses.data ?? []).filter(
+        (h) => h.active && (!eventSector || h.sector_id === eventSector),
+      ),
       { isAdmin, sectorId, allPrayerHouses },
     );
     // Em Ensaio Musical, a casa do local do ensaio aparece em primeiro lugar.

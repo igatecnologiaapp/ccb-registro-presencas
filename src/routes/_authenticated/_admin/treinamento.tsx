@@ -67,7 +67,10 @@ function TrainingRoute() {
   const [toDelete, setToDelete] = useState<TrainingAttendeeRow | null>(null);
 
   const activeFunctions = (functions.data ?? []).filter((f) => f.active);
-  const activeHouses = (houses.data ?? []).filter((h) => h.active);
+  const eventSector = selectedEvent?.sector_id ?? null;
+  const activeHouses = (houses.data ?? []).filter(
+    (h) => h.active && (!eventSector || h.sector_id === eventSector),
+  );
   const functionNames = nameMap(functions.data ?? []);
   const houseNames = nameMap(houses.data ?? []);
 
