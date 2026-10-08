@@ -99,7 +99,7 @@ def run(output):
         verify(LABELS[4], accepted_b.status_code == 201 and a == 1 and b == 2)
         current = client.attendance(event["id"])
         verify(LABELS[5], next((r for r in current if r["id"] == history["id"]), None) == history)
-        verify(LABELS[3], len(current) == 2 and all("RECUSADA" not in r["name"] for r in current)
+        verify(LABELS[3], len(current) == 2 and all("RECUSADA" not in r["name"] for r in current))
     except Exception as error:
         report["falhas"].append(str(error))
     finally:
