@@ -44,6 +44,15 @@ class SectorAuditTests(unittest.TestCase):
         detect(data)
         self.assertEqual(data, original)
 
+    def test_captured_sector_names_survive_cleanup(self):
+        attempt = {"event": {"id": "removed-e", "sector_id": "removed-a"},
+                   "house": {"id": "removed-h", "sector_id": "removed-b"},
+                   "event_sector": {"id": "removed-a", "nome": "Temporary A"},
+                   "house_sector": {"id": "removed-b", "nome": "Temporary B"}}
+        row = detect({}, [attempt])["ocorrencias"][0]
+        self.assertEqual(row["setor_evento"]["nome"], "Temporary A")
+        self.assertEqual(row["setor_casa"]["nome"], "Temporary B")
+
 
 if __name__ == "__main__":
     unittest.main()
