@@ -21,9 +21,9 @@ def detect(snapshot, attempts=()):
         occurrences.append({
             "tipo": kind,
             "evento": describe(event),
-            "setor_evento": describe(sectors.get(event.get("sector_id"))) or {"id": event.get("sector_id"), "nome": None},
+            "setor_evento": describe(sectors.get(event.get("sector_id"))) or row.get("event_sector") or {"id": event.get("sector_id"), "nome": None},
             "casa": describe(house),
-            "setor_casa": describe(sectors.get((house or {}).get("sector_id"))) or {"id": (house or {}).get("sector_id"), "nome": None},
+            "setor_casa": describe(sectors.get((house or {}).get("sector_id"))) or row.get("house_sector") or {"id": (house or {}).get("sector_id"), "nome": None},
             "data_hora": row.get("created_at") or row.get("timestamp") or event.get("updated_at"),
             "detectado_em": detected_at,
             "usuario_responsavel": row.get("user_id") or row.get("created_by"),

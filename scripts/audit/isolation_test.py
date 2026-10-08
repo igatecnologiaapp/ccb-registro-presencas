@@ -74,6 +74,8 @@ def run(output):
             count_after = len(client.attendance(event["id"]))
             evidence = {"timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(), "user_id": uid,
                         "event_id": event["id"], "prayer_house_id": house["id"], "event": dict(event), "house": house,
+                        "event_sector": {"id": event["sector_id"], "nome": sa["name"] if event["sector_id"] == sa["id"] else sb["name"]},
+                        "house_sector": {"id": house.get("sector_id"), "nome": sa["name"] if house.get("sector_id") == sa["id"] else sb["name"] if house.get("sector_id") == sb["id"] else None},
                         "request": {"method": "POST", "path": "/rest/v1/attendees", "body": payload},
                         "http_status": response.status_code, "response": response.json(),
                         "count_before": count_before, "count_after": count_after}

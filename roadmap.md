@@ -1,7 +1,7 @@
 # Roadmap
-- [ ] Add read-only sector anomaly auditor and captured-attempt analysis
-- [ ] Add automated temporary-data isolation test and integrity checks
-- [ ] Run automated tests, audit real data read-only, and report results
+- [x] Add read-only sector anomaly auditor and captured-attempt analysis
+- [x] Add automated temporary-data isolation test and integrity checks
+- [x] Run automated tests, audit real data read-only, and report results
 - [x] Repeat isolated Test 5, verify zero attendance increment, clean temporary data and compare real records
 - [ ] Add reusable participants and phone snapshots
 - [ ] Add secure per-event direct links
