@@ -27,6 +27,7 @@ export type EventRow = {
   status: string;
   event_type: string;
   sector_id: string | null;
+  rehearsal_house_id: string | null;
   public_token: string;
   created_at: string;
   updated_at: string;
@@ -204,6 +205,7 @@ export function useSaveEvent() {
       status: string;
       event_type: string;
       sector_id: string | null;
+      rehearsal_house_id: string | null;
     }) => {
       const payload = {
         name: input.name.trim(),
@@ -213,6 +215,7 @@ export function useSaveEvent() {
         status: input.status,
         event_type: input.event_type,
         sector_id: input.sector_id,
+        rehearsal_house_id: input.rehearsal_house_id,
       };
 
       if (input.id) {
@@ -251,6 +254,7 @@ export function useDuplicateEvent() {
             location: event.location,
             event_type: event.event_type,
             sector_id: event.sector_id,
+            rehearsal_house_id: event.rehearsal_house_id,
             status: "aberto",
           })
           .select()
