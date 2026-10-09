@@ -8,3 +8,5 @@
 - [ ] Enforce event status and permissions in the backend
 - [ ] Fix collaborator login redirect
 - [ ] Validate all required scenarios and clean test data
+- [ ] Unify authorized Vila Ré records, correct event and link Local do Ensaio — blocked pending authorization for inevitable automatic report/PDF total changes.
+- [ ] Validate authorized correction, historical timestamps, isolation, exclusive link and temporary-data cleanup — awaits correction authorization.
