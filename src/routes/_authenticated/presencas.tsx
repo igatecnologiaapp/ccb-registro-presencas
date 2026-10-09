@@ -59,6 +59,8 @@ export const Route = createFileRoute("/_authenticated/presencas")({
         property: "og:description",
         content: "Lançamento rápido de presenças por casa de oração, função e instrumento.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AttendanceRoute,
@@ -107,9 +109,7 @@ function AttendanceRoute() {
     );
     // Em Ensaio Musical, a casa do local do ensaio aparece em primeiro lugar.
     if (selectedEvent?.event_type !== "ensaio_musical") return allowed;
-    const local = (selectedEvent.location ?? "").trim().toLowerCase();
-    if (!local) return allowed;
-    const match = allowed.find((h) => h.name.trim().toLowerCase() === local);
+    const match = allowed.find((h) => h.id === selectedEvent.rehearsal_house_id);
     if (!match) return allowed;
     return [match, ...allowed.filter((h) => h.id !== match.id)];
   }, [houses.data, isAdmin, sectorId, allPrayerHouses, selectedEvent]);
@@ -283,6 +283,11 @@ function AttendanceRoute() {
           Evento ativo: <span className="text-foreground font-medium">{selectedEvent.name}</span>. O
           nome permanece em foco para lançamentos em sequência.
         </p>
+        {selectedEvent.event_type === "ensaio_musical" && selectedEvent.rehearsal_house_id && (
+          <p className="text-muted-foreground mt-1 text-sm">
+            Local do Ensaio: <span className="text-foreground font-medium">{houseNames.get(selectedEvent.rehearsal_house_id) ?? selectedEvent.location}</span>
+          </p>
+        )}
         {!eventOpen && (
           <p className="text-destructive mt-2 text-sm font-medium">
             Este evento não está disponível para novos registros.
@@ -332,11 +337,11 @@ function AttendanceRoute() {
             <Label htmlFor="attendee-house">Casa de Oração</Label>
             <SearchSelect
               id="attendee-house"
-              options={activeHouses.map((h, index) => ({
+              options={activeHouses.map((h) => ({
                 value: h.id,
                 label:
-                  index === 0 && selectedEvent?.event_type === "ensaio_musical"
-                    ? `${h.name} (local do ensaio)`
+                  h.id === selectedEvent.rehearsal_house_id && selectedEvent.event_type === "ensaio_musical"
+                    ? `${h.name} (Local do Ensaio)`
                     : h.name,
               }))}
               value={houseId}

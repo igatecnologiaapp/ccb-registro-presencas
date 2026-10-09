@@ -39,6 +39,7 @@ import {
   useDeleteEvent,
   useDuplicateEvent,
   useSaveEvent,
+  usePrayerHouses,
   useSectors,
   type EventRow,
 } from "@/lib/data";
@@ -58,6 +59,8 @@ export const Route = createFileRoute("/_authenticated/_admin/eventos")({
         property: "og:description",
         content: "Gerencie as reuniões técnicas musicais e o evento ativo do sistema.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: EventsRoute,
@@ -71,6 +74,7 @@ const emptyForm = {
   status: "aberto",
   event_type: "reuniao_musical",
   sector_id: "",
+  rehearsal_house_id: "",
 };
 
 function EventsRoute() {
@@ -79,11 +83,15 @@ function EventsRoute() {
   const duplicate = useDuplicateEvent();
   const remove = useDeleteEvent();
   const sectors = useSectors();
+  const houses = usePrayerHouses();
 
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [toDelete, setToDelete] = useState<EventRow | null>(null);
+  const rehearsalHouses = (houses.data ?? []).filter(
+    (house) => house.active && house.sector_id === form.sector_id,
+  );
 
   const openNew = () => {
     setEditingId(null);
@@ -101,6 +109,7 @@ function EventsRoute() {
       status: event.status,
       event_type: event.event_type,
       sector_id: event.sector_id ?? "",
+      rehearsal_house_id: event.rehearsal_house_id ?? "",
     });
     setOpen(true);
   };
@@ -114,16 +123,22 @@ function EventsRoute() {
       toast.error("Selecione o Setor do evento.");
       return;
     }
+    const rehearsalHouse = rehearsalHouses.find((house) => house.id === form.rehearsal_house_id);
+    if (form.event_type === "ensaio_musical" && !rehearsalHouse) {
+      toast.error("Selecione um Local do Ensaio ativo pertencente ao Setor do evento.");
+      return;
+    }
     try {
       const saved = await save.mutateAsync({
         ...(editingId ? { id: editingId } : {}),
         name: form.name.trim(),
         date: form.date,
         start_time: form.start_time,
-        location: form.location.trim(),
+        location: form.event_type === "ensaio_musical" ? rehearsalHouse?.name ?? "" : form.location.trim(),
         status: form.status,
         event_type: form.event_type,
         sector_id: form.sector_id,
+        rehearsal_house_id: form.event_type === "ensaio_musical" ? form.rehearsal_house_id : null,
       });
       toast.success(editingId ? "Evento atualizado." : "Evento criado.");
       if (!editingId && saved && typeof saved === "object" && "id" in saved) {
@@ -192,7 +207,7 @@ function EventsRoute() {
                         </span>
                         {event.location && (
                           <span className="flex items-center gap-1">
-                            <MapPin className="size-3" /> {event.location}
+                            <MapPin className="size-3" /> {event.event_type === "ensaio_musical" ? "Local do Ensaio: " : ""}{event.location}
                           </span>
                         )}
                       </p>
@@ -291,7 +306,7 @@ function EventsRoute() {
               <Label htmlFor="event-sector">Setor</Label>
               <Select
                 value={form.sector_id}
-                onValueChange={(sector_id) => setForm({ ...form, sector_id })}
+                onValueChange={(sector_id) => setForm({ ...form, sector_id, rehearsal_house_id: "" })}
               >
                 <SelectTrigger id="event-sector" className="h-11 w-full">
                   <SelectValue placeholder="Selecione o Setor" />
@@ -354,7 +369,25 @@ function EventsRoute() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
+            {form.event_type === "ensaio_musical" ? (
+              <div className="space-y-2">
+                <Label htmlFor="event-rehearsal-house">Local do Ensaio</Label>
+                <Select
+                  value={form.rehearsal_house_id}
+                  onValueChange={(rehearsal_house_id) => setForm({ ...form, rehearsal_house_id })}
+                  disabled={!form.sector_id || houses.isLoading}
+                >
+                  <SelectTrigger id="event-rehearsal-house" className="h-11 w-full">
+                    <SelectValue placeholder="Selecionar Local do Ensaio…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rehearsalHouses.map((house) => (
+                      <SelectItem key={house.id} value={house.id}>{house.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : <div className="space-y-2">
               <Label htmlFor="event-location">Local</Label>
               <Input
                 id="event-location"
@@ -363,7 +396,7 @@ function EventsRoute() {
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
               />
-            </div>
+            </div>}
             <div className="space-y-2">
               <Label htmlFor="event-status">Situação</Label>
               <Select
