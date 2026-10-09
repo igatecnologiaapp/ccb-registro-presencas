@@ -478,6 +478,10 @@ export type Database = {
         Returns: boolean
       }
       normalize_participant_name: { Args: { _value: string }; Returns: string }
+      transfer_authorized_vila_re_attendance: {
+        Args: never
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "operator"
