@@ -98,6 +98,7 @@ export type Database = {
           location: string
           name: string
           public_token: string
+          rehearsal_house_id: string | null
           sector_id: string | null
           start_time: string
           status: string
@@ -111,6 +112,7 @@ export type Database = {
           location?: string
           name: string
           public_token?: string
+          rehearsal_house_id?: string | null
           sector_id?: string | null
           start_time?: string
           status?: string
@@ -124,12 +126,20 @@ export type Database = {
           location?: string
           name?: string
           public_token?: string
+          rehearsal_house_id?: string | null
           sector_id?: string | null
           start_time?: string
           status?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "events_rehearsal_house_id_fkey"
+            columns: ["rehearsal_house_id"]
+            isOneToOne: false
+            referencedRelation: "prayer_houses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_sector_id_fkey"
             columns: ["sector_id"]
